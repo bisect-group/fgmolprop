@@ -1,0 +1,4 @@
+[core]
+    remote = fgmolprop
+['remote "fgmolprop"']
+    url = gdrive://1OAeigntWxb1nayeLSx4MBrUG5TLpkajw
