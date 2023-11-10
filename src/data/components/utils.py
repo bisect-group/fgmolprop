@@ -14,11 +14,8 @@ lg.setLevel(RDLogger.CRITICAL)
 def std_smiles(smiles: str) -> str | None:
     """Standardizes a SMILES string.
 
-    Args:
-        smiles (str): SMILES string
-
-    Returns:
-        str | None: Standardized SMILES string or None if invalid
+    :param smiles: SMILES string
+    :return: Standardized SMILES string
     """
     try:
         standard = standardize_smiles(smiles)
@@ -31,11 +28,8 @@ def std_smiles(smiles: str) -> str | None:
 def std_smarts(smarts: str) -> str | None:
     """Standardizes a SMARTS string.
 
-    Args:
-        smarts (str): SMARTS string
-
-    Returns:
-        str: Standardized SMARTS string
+    :param smarts: SMARTS string
+    :return: Standardized SMARTS string
     """
     try:
         mol = MolFromSmarts(smarts)
@@ -47,12 +41,9 @@ def std_smarts(smarts: str) -> str | None:
 def smiles2vector_fg(smi: str, fgroups_list: List[MolFromSmarts]) -> torch.Tensor:
     """Converts a SMILES string to a functional group vector.
 
-    Args:
-        smi (str): SMILES string
-        fgroups_list (List[MolFromSmarts]): List of functional groups
-
-    Returns:
-        torch.Tensor: Feature vector
+    :param smi: SMILES string
+    :param fgroups_list: List of functional groups
+    :return: Feature vector
     """
     molecule = MolFromSmiles(smi)
     v_1 = torch.zeros(len(fgroups_list), dtype=torch.float32)
@@ -63,14 +54,11 @@ def smiles2vector_fg(smi: str, fgroups_list: List[MolFromSmarts]) -> torch.Tenso
 
 
 def smiles2vector_mfg(smi: str, tokenizer: tokenizers.Tokenizer) -> torch.Tensor:
-    """Converts a SMILES string to a mined functional group vector.
+    """Converts a SMILES string to a molecular fingerprint vector.
 
-    Args:
-        smi (str): _description_
-        tokenizer (tokenizers.Tokenizer): Tokenizer
-
-    Returns:
-        torch.Tensor: Feature vector
+    :param smi: SMILES string
+    :param tokenizer: Pretrained tokenizer
+    :return: Feature vector
     """
     idx = tokenizer.encode(smi).ids
     mfg = torch.zeros(tokenizer.get_vocab_size(), dtype=torch.float32)
@@ -81,21 +69,15 @@ def smiles2vector_mfg(smi: str, tokenizer: tokenizers.Tokenizer) -> torch.Tensor
 def create_butina_split(
     df: pd.DataFrame, seed: int, frac: tuple, entity: str, cutoff: float = 0.4
 ) -> dict:
-    """Create a butina split. It first generates molecular fingerprints for each molecule and then
-    split based on fingerprints.
+    """Creates a Butina split.
 
-    Args:
-        df (pd.DataFrame): Dataset dataframe
-        seed (int): The random seed
-        frac (tuple): A tuple of train/valid/test fractions
-        entity (str): The column name for where molecule stores
-        cutoff (float, optional): Cutoff for splitting. Defaults to 0.4.
-
-    Raises:
-        ImportError: If rdkit is not installed
-
-    Returns:
-        dict: A dictionary of split dataframes, where keys are train/valid/test
+    :param df: Dataframe with SMILES
+    :param seed: Random seed
+    :param frac: Fraction of data for train, val and test
+    :param entity: Entity to split on
+    :param cutoff: Cutoff for clustering, defaults to 0.4
+    :raises ImportError: If rdkit is not installed
+    :return: Dictionary with train, val and test dataframes
     """
 
     try:
