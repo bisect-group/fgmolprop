@@ -43,4 +43,4 @@ loss_weights:
   ubc_loss: 0.0
 
 # compile model for faster training with pytorch 2.0
-compile: true
+compile: false
