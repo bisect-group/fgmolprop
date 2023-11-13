@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Optional, Tuple
 import hydra
 import lightning as L
 import rootutils
-import torch
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
@@ -26,15 +25,14 @@ rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # more info: https://github.com/ashleve/rootutils
 # ------------------------------------------------------------------------------------ #
 
-from src.utils import (
-    RankedLogger,
-    extras,
-    get_metric_value,
-    instantiate_callbacks,
-    instantiate_loggers,
-    log_hyperparameters,
-    task_wrapper,
-)
+from src.models.components.utils import load_metrics_criterion  # noqa: E402
+from src.utils import RankedLogger  # noqa: E402
+from src.utils import extras  # noqa: E402
+from src.utils import get_metric_value  # noqa: E402
+from src.utils import instantiate_callbacks  # noqa: E402
+from src.utils import instantiate_loggers  # noqa: E402
+from src.utils import log_hyperparameters  # noqa: E402
+from src.utils import task_wrapper  # noqa: E402; noqa: E402
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
@@ -57,8 +55,22 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     log.info(f"Instantiating datamodule <{cfg.data._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
 
+    log.info("Instantiating metrics...")
+    (
+        criterion,
+        main_metric,
+        valid_metric_best,
+        additional_metrics,
+    ) = load_metrics_criterion(cfg.metrics, cfg.data.dataset)
+
     log.info(f"Instantiating model <{cfg.model._target_}>")
-    model: LightningModule = hydra.utils.instantiate(cfg.model)
+    model: LightningModule = hydra.utils.instantiate(
+        cfg.model,
+        criterion=criterion,
+        main_metric=main_metric,
+        valid_metric_best=valid_metric_best,
+        additional_metrics=additional_metrics,
+    )
 
     log.info("Instantiating callbacks...")
     callbacks: List[Callback] = instantiate_callbacks(cfg.get("callbacks"))
@@ -90,7 +102,7 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
     if cfg.get("test"):
         log.info("Starting testing!")
-        ckpt_path = trainer.checkpoint_callback.best_model_path
+        ckpt_path = trainer.checkpoint_callback.best_model_path  # type: ignore
         if ckpt_path == "":
             log.warning("Best ckpt not found! Using current weights for testing...")
             ckpt_path = None

@@ -24,6 +24,7 @@ rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # more info: https://github.com/ashleve/rootutils
 # ------------------------------------------------------------------------------------ #
 
+from src.models.components.utils import load_metrics_criterion
 from src.utils import (
     RankedLogger,
     extras,
@@ -50,8 +51,22 @@ def evaluate(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     log.info(f"Instantiating datamodule <{cfg.data._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
 
+    log.info("Instantiating metrics...")
+    (
+        criterion,
+        main_metric,
+        valid_metric_best,
+        additional_metrics,
+    ) = load_metrics_criterion(cfg.metrics, cfg.data.dataset)
+
     log.info(f"Instantiating model <{cfg.model._target_}>")
-    model: LightningModule = hydra.utils.instantiate(cfg.model)
+    model: LightningModule = hydra.utils.instantiate(
+        cfg.model,
+        criterion=criterion,
+        main_metric=main_metric,
+        valid_metric_best=valid_metric_best,
+        additional_metrics=additional_metrics,
+    )
 
     log.info("Instantiating loggers...")
     logger: List[Logger] = instantiate_loggers(cfg.get("logger"))
