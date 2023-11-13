@@ -154,15 +154,17 @@ class FGRLitModule(LightningModule):
         """
         optimizer = self.optimizers()
 
-        # first forward-backward pass
-        loss_1, logits, targets = self.model_step(batch)
-        self.manual_backward(loss_1)
-        optimizer.first_step(zero_grad=True)  # clear gradients # type: ignore
+        def closure():
+            optimizer.zero_grad()  # type: ignore
+            loss, _, _ = self.model_step(batch)
+            loss.backward()
+            return loss
 
-        # second forward-backward pass
-        loss_2 = self.model_step(batch)[0]
-        self.manual_backward(loss_2)
-        optimizer.second_step(zero_grad=True)  # clear gradients # type: ignore
+        # first forward-backward pass
+        loss, logits, targets = self.model_step(batch)
+        self.manual_backward(loss)
+        optimizer.step(closure=closure)  # type: ignore
+        optimizer.zero_grad()  # type: ignore
 
         scheduler = self.lr_schedulers()
         scheduler.step()  # type: ignore
@@ -170,7 +172,7 @@ class FGRLitModule(LightningModule):
         # update and log metrics
         self.train_metric.update(logits, targets)
         self.train_add_metrics.update(logits, targets)
-        self.log("train/loss", loss_1, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train/loss", loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log("train/main", self.train_metric, on_step=False, on_epoch=True, prog_bar=True)
         self.log_dict(self.train_add_metrics, on_step=False, on_epoch=True, prog_bar=True)
 
@@ -248,7 +250,8 @@ class FGRLitModule(LightningModule):
         )
         if self.hparams["scheduler"] is not None:
             scheduler = self.hparams["scheduler"](
-                optimizer=optimizer, total_steps=self.trainer.estimated_stepping_batches
+                optimizer=optimizer.base_optimizer,
+                total_steps=self.trainer.estimated_stepping_batches,
             )
             lr_scheduler = {"scheduler": scheduler}
             return {"optimizer": optimizer, "lr_scheduler": lr_scheduler}
