@@ -1,0 +1,13 @@
+_target_: src.data.datamodules.FGRDataModule
+
+data_dir: "${paths.data_dir}"
+dataset: "BBBP"
+method: "FG"
+descriptors: False
+tokenize_dataset: "pubchem"
+frequency: 500
+split_type: "scaffold"
+fold_idx: 0
+batch_size: 16
+num_workers: 4
+pin_memory: True
