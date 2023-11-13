@@ -1,6 +1,7 @@
 """This file prepares config fixtures for other tests."""
 
 from pathlib import Path
+from typing import Any, Generator
 
 import pytest
 import rootutils
@@ -22,7 +23,7 @@ def cfg_train_global() -> DictConfig:
         with open_dict(cfg):
             cfg.paths.root_dir = str(rootutils.find_root(indicator=".project-root"))
             cfg.trainer.max_epochs = 1
-            cfg.trainer.limit_train_batches = 0.01
+            cfg.trainer.limit_train_batches = 0.1
             cfg.trainer.limit_val_batches = 0.1
             cfg.trainer.limit_test_batches = 0.1
             cfg.trainer.accelerator = "cpu"
@@ -62,7 +63,7 @@ def cfg_eval_global() -> DictConfig:
 
 
 @pytest.fixture(scope="function")
-def cfg_train(cfg_train_global: DictConfig, tmp_path: Path) -> DictConfig:
+def cfg_train(cfg_train_global: DictConfig, tmp_path: Path) -> Generator[Any, Any, Any]:
     """A pytest fixture built on top of the `cfg_train_global()` fixture, which accepts a temporary
     logging path `tmp_path` for generating a temporary logging path.
 
@@ -85,7 +86,7 @@ def cfg_train(cfg_train_global: DictConfig, tmp_path: Path) -> DictConfig:
 
 
 @pytest.fixture(scope="function")
-def cfg_eval(cfg_eval_global: DictConfig, tmp_path: Path) -> DictConfig:
+def cfg_eval(cfg_eval_global: DictConfig, tmp_path: Path) -> Generator[Any, Any, Any]:
     """A pytest fixture built on top of the `cfg_eval_global()` fixture, which accepts a temporary
     logging path `tmp_path` for generating a temporary logging path.
 
