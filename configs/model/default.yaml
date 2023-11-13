@@ -1,0 +1,46 @@
+_target_: src.models.fgr_module.FGRLitModule
+
+base_optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+
+optimizer:
+  _target_: src.models.components.losses.SAM
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.001
+  rho: 0.05
+  adaptive: true
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.OneCycleLR
+  _partial_: true
+  max_lr: 1.0e-2
+
+net:
+  _target_: src.models.components.autoencoder.FGRModel
+  fg_input_dim: 2672
+  num_feat_dim: 211
+  method: "${data.method}"
+  tokenize_dataset: "${data.tokenize_dataset}"
+  frequency: "${data.frequency}"
+  dataset: "${data.dataset}"
+  descriptors: "${data.descriptors}"
+  hidden_dims: [5196, 2048, 1024, 512]
+  bottleneck_dim: 256
+  output_dims: [256, 128]
+  dropout: 0.3
+  activation: "selu"
+  tie_weights: False
+
+recon_loss:
+  _target_: src.models.components.losses.FocalLoss
+  alpha: 1.0
+  gamma: 0
+
+loss_weights:
+  recon_loss: 1.0
+  ubc_loss: 0.0
+
+# compile model for faster training with pytorch 2.0
+compile: true
