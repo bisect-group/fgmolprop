@@ -155,9 +155,8 @@ class FGRLitModule(LightningModule):
         optimizer = self.optimizers()
 
         def closure():
-            optimizer.zero_grad()  # type: ignore
             loss, _, _ = self.model_step(batch)
-            loss.backward()
+            self.manual_backward(loss)
             return loss
 
         # first forward-backward pass
@@ -250,7 +249,7 @@ class FGRLitModule(LightningModule):
         )
         if self.hparams["scheduler"] is not None:
             scheduler = self.hparams["scheduler"](
-                optimizer=optimizer.base_optimizer,
+                optimizer=optimizer,
                 total_steps=self.trainer.estimated_stepping_batches,
             )
             lr_scheduler = {"scheduler": scheduler}

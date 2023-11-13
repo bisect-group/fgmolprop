@@ -121,10 +121,12 @@ def weight_init(model: nn.Module, activation: str) -> None:
                 init.constant_(m.bias, 0)
 
 
-def load_metrics(metrics_cfg: DictConfig, dataset: str) -> Tuple[Metric, Metric, MetricCollection]:
+def load_metrics_criterion(
+    cfg: DictConfig, dataset: str
+) -> Tuple[nn.Module, Metric, Metric, MetricCollection]:
     """Function for loading metrics.
 
-    :param metrics_cfg: Metrics config
+    :param cfg: Metrics config
     :param dataset: Dataset to train on
     :raises RuntimeError: Requires valid_best metric that would track best state of Main Metric
     :return: Main metric, valid metric best, additional metrics
@@ -132,6 +134,9 @@ def load_metrics(metrics_cfg: DictConfig, dataset: str) -> Tuple[Metric, Metric,
     num_classes = TASK_DICT[dataset][0]
     task_type = TASK_DICT[dataset][1]
 
+    criterion = hydra.utils.instantiate(cfg.loss)
+
+    metrics_cfg = cfg.metrics
     main_metric = hydra.utils.instantiate(
         metrics_cfg.main,
         num_classes=num_classes,
@@ -157,4 +162,4 @@ def load_metrics(metrics_cfg: DictConfig, dataset: str) -> Tuple[Metric, Metric,
                 )
             )
 
-    return main_metric, valid_metric_best, MetricCollection(additional_metrics)
+    return criterion, main_metric, valid_metric_best, MetricCollection(additional_metrics)
