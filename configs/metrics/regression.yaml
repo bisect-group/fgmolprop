@@ -1,0 +1,26 @@
+loss:
+  _target_: "torch.nn.SmoothL1Loss"
+
+metrics:
+  main:
+    _target_: "torchmetrics.MeanSquaredError"
+    squared: False
+  valid_best:
+    _target_: "torchmetrics.MinMetric"
+  additional:
+    MeanAbsoluteError:
+      _target_: "torchmetrics.MeanAbsoluteError"
+    R2Score:
+      _target_: "torchmetrics.R2Score"
+    PearsonCorrCoef:
+      _target_: "torchmetrics.PearsonCorrCoef"
+    MeanAbsolutePercentageError:
+      _target_: "torchmetrics.MeanAbsolutePercentageError"
+    ExplainedVariance:
+      _target_: "torchmetrics.ExplainedVariance"
+
+logging:
+  on_step: False
+  on_epoch: True
+  sync_dist: True
+  prog_bar: True

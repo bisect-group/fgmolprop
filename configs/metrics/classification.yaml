@@ -1,0 +1,37 @@
+loss:
+  _target_: "torch.nn.BCEWithLogitsLoss"
+
+metrics:
+  main:
+    _target_: "torchmetrics.AUROC"
+    task: "binary"
+    num_labels: 1
+  valid_best:
+    _target_: "torchmetrics.MaxMetric"
+  additional:
+    Accuracy:
+      _target_: "torchmetrics.Accuracy"
+      task: "binary"
+      num_labels: 1
+    F1Score:
+      _target_: "torchmetrics.F1Score"
+      task: "binary"
+      num_labels: 1
+    MatthewsCorrCoef:
+      _target_: "torchmetrics.MatthewsCorrCoef"
+      task: "binary"
+      num_labels: 1
+    Precision:
+      _target_: "torchmetrics.Precision"
+      task: "binary"
+      num_labels: 1
+    Recall:
+      _target_: "torchmetrics.Recall"
+      task: "binary"
+      num_labels: 1
+
+logging:
+  on_step: False
+  on_epoch: True
+  sync_dist: True
+  prog_bar: True
