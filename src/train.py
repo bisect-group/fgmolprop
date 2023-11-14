@@ -1,11 +1,18 @@
-from typing import Any, Dict, List, Optional, Tuple
+from copy import deepcopy
+from typing import Any, Dict, List, Optional
 
 import hydra
 import lightning as L
 import rootutils
+import torch
+import wandb
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
+
+torch.set_float32_matmul_precision("high")
+torch.set_num_threads(4)  # Set number of threads to 4
+torch.set_num_interop_threads(4)  # Set number of threads to 4
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # ------------------------------------------------------------------------------------ #
@@ -38,7 +45,7 @@ log = RankedLogger(__name__, rank_zero_only=True)
 
 
 @task_wrapper
-def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+def train(cfg: DictConfig) -> Dict[str, Any]:
     """Trains the model. Can additionally evaluate on a testset, using best weights obtained during
     training.
 
@@ -46,14 +53,11 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     failure. Useful for multiruns, saving info about the crash, etc.
 
     :param cfg: A DictConfig configuration composed by Hydra.
-    :return: A tuple with metrics and dict with all instantiated objects.
+    :return: A Dict[str, Any] with the metric values obtained during training and testing.
     """
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
         L.seed_everything(cfg.seed, workers=True)
-
-    log.info(f"Instantiating datamodule <{cfg.data._target_}>")
-    datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
 
     log.info("Instantiating metrics...")
     (
@@ -72,49 +76,72 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         additional_metrics=additional_metrics,
     )
 
-    log.info("Instantiating callbacks...")
-    callbacks: List[Callback] = instantiate_callbacks(cfg.get("callbacks"))
+    metric_dict: Dict[str, Any] = {}
 
-    log.info("Instantiating loggers...")
-    logger: List[Logger] = instantiate_loggers(cfg.get("logger"))
+    for fold_idx in range(cfg.get("n_folds")):
+        log.info(f"Instantiating datamodule fold_{fold_idx} <{cfg.data._target_}>")
+        datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data, fold_idx=fold_idx)
 
-    log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
-    trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
+        _model = deepcopy(model)
 
-    object_dict = {
-        "cfg": cfg,
-        "datamodule": datamodule,
-        "model": model,
-        "callbacks": callbacks,
-        "logger": logger,
-        "trainer": trainer,
-    }
+        log.info("Instantiating callbacks...")
+        callbacks: List[Callback] = instantiate_callbacks(cfg.get("callbacks"))
 
-    if logger:
-        log.info("Logging hyperparameters!")
-        log_hyperparameters(object_dict)
+        log.info("Instantiating loggers...")
+        logger: List[Logger] = instantiate_loggers(cfg.get("logger"))
 
-    if cfg.get("train"):
-        log.info("Starting training!")
-        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+        log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
+        trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
 
-    train_metrics = trainer.callback_metrics
+        object_dict = {
+            "cfg": cfg,
+            "datamodule": datamodule,
+            "model": _model,
+            "callbacks": callbacks,
+            "logger": logger,
+            "trainer": trainer,
+        }
 
-    if cfg.get("test"):
-        log.info("Starting testing!")
-        ckpt_path = trainer.checkpoint_callback.best_model_path  # type: ignore
-        if ckpt_path == "":
-            log.warning("Best ckpt not found! Using current weights for testing...")
-            ckpt_path = None
-        trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
-        log.info(f"Best ckpt path: {ckpt_path}")
+        if logger:
+            log.info("Logging hyperparameters!")
+            log_hyperparameters(object_dict)
 
-    test_metrics = trainer.callback_metrics
+        if cfg.get("train"):
+            log.info("Starting training!")
+            trainer.fit(model=_model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
-    # merge train and test metrics
-    metric_dict = {**train_metrics, **test_metrics}
+        train_metrics = trainer.callback_metrics
 
-    return metric_dict, object_dict
+        if cfg.get("test"):
+            log.info("Starting testing!")
+            ckpt_path = trainer.checkpoint_callback.best_model_path  # type: ignore
+            if ckpt_path == "":
+                log.warning("Best ckpt not found! Using current weights for testing...")
+                ckpt_path = None
+            trainer.test(model=_model, datamodule=datamodule, ckpt_path=ckpt_path)
+            log.info(f"Best ckpt path: {ckpt_path}")
+
+        test_metrics = trainer.callback_metrics
+
+        # Update metric dict for each fold
+        for key, value in train_metrics.items():
+            if key in metric_dict:
+                metric_dict[key] += float(value)
+            else:
+                metric_dict[key] = float(value)
+
+        for key, value in test_metrics.items():
+            if key in metric_dict:
+                metric_dict[key] += float(value)
+            else:
+                metric_dict[key] = float(value)
+
+        wandb.finish()
+
+    for key in metric_dict.keys():
+        metric_dict[key] /= cfg.get("n_folds")
+
+    return metric_dict
 
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
@@ -129,7 +156,7 @@ def main(cfg: DictConfig) -> Optional[float]:
     extras(cfg)
 
     # train the model
-    metric_dict, _ = train(cfg)
+    metric_dict = train(cfg)
 
     # safely retrieve metric value for hydra-based hyperparameter optimization
     metric_value = get_metric_value(

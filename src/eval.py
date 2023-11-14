@@ -24,14 +24,12 @@ rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # more info: https://github.com/ashleve/rootutils
 # ------------------------------------------------------------------------------------ #
 
-from src.models.components.utils import load_metrics_criterion
-from src.utils import (
-    RankedLogger,
-    extras,
-    instantiate_loggers,
-    log_hyperparameters,
-    task_wrapper,
-)
+from src.models.components.utils import load_metrics_criterion  # noqa: E402
+from src.utils import RankedLogger  # noqa: E402
+from src.utils import extras  # noqa: E402
+from src.utils import instantiate_loggers  # noqa: E402
+from src.utils import log_hyperparameters  # noqa: E402
+from src.utils import task_wrapper  # noqa: E402; noqa: E402
 
 log = RankedLogger(__name__, rank_zero_only=True)
 
