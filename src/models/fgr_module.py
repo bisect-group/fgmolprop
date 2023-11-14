@@ -115,6 +115,11 @@ class FGRLitModule(LightningModule):
         self.val_metric.reset()
         self.val_add_metrics.reset()
         self.val_best.reset()
+        self.trainer.logger.watch(  # type: ignore
+            model=self.trainer.model,
+            log="all",
+            log_freq=100,
+        )
 
     def ubc_loss(self, z_d: Any) -> Any:
         """Calculate the UBC loss.
