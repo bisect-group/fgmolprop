@@ -29,7 +29,7 @@ net:
   hidden_dims: [5196, 2048, 1024, 512]
   bottleneck_dim: 256
   output_dims: [256, 128]
-  dropout: 0.3
+  dropout: 0
   activation: "selu"
   tie_weights: False
 
