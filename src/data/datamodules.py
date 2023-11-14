@@ -216,6 +216,7 @@ class FGRDataModule(LightningDataModule):
                 pin_memory=self.hparams["pin_memory"],
                 sampler=self.sampler,
                 shuffle=False,
+                multiprocessing_context="fork",
             )
         else:
             return DataLoader(
@@ -224,6 +225,7 @@ class FGRDataModule(LightningDataModule):
                 num_workers=self.hparams["num_workers"],
                 pin_memory=self.hparams["pin_memory"],
                 shuffle=True,
+                multiprocessing_context="fork",
             )
 
     def val_dataloader(self) -> DataLoader[Any]:
@@ -237,6 +239,7 @@ class FGRDataModule(LightningDataModule):
             num_workers=self.hparams["num_workers"],
             pin_memory=self.hparams["pin_memory"],
             shuffle=False,
+            multiprocessing_context="fork",
         )
 
     def test_dataloader(self) -> DataLoader[Any]:
@@ -250,6 +253,7 @@ class FGRDataModule(LightningDataModule):
             num_workers=self.hparams["num_workers"],
             pin_memory=self.hparams["pin_memory"],
             shuffle=False,
+            multiprocessing_context="fork",
         )
 
     def teardown(self, stage: Optional[str] = None) -> None:
