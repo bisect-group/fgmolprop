@@ -133,16 +133,20 @@ def load_metrics_criterion(
     """
     num_classes = TASK_DICT[dataset][0]
     task_type = TASK_DICT[dataset][1]
+    is_regression = TASK_DICT[dataset][2]
 
     criterion = hydra.utils.instantiate(cfg.loss)
 
     metrics_cfg = cfg.metrics
-    main_metric = hydra.utils.instantiate(
-        metrics_cfg.main,
-        num_classes=num_classes,
-        task=task_type,
-        num_labels=num_classes,
-    )
+    if not is_regression:
+        main_metric = hydra.utils.instantiate(
+            metrics_cfg.main,
+            num_classes=num_classes,
+            task=task_type,
+            num_labels=num_classes,
+        )
+    else:
+        main_metric = hydra.utils.instantiate(metrics_cfg.main)
     if not metrics_cfg.get("valid_best"):
         raise RuntimeError(
             "Requires valid_best metric that would track best state of "
@@ -153,13 +157,15 @@ def load_metrics_criterion(
     additional_metrics = []
     if metrics_cfg.get("additional"):
         for _, metric_cfg in metrics_cfg.additional.items():
-            additional_metrics.append(
-                hydra.utils.instantiate(
+            if not is_regression:
+                add_metric = hydra.utils.instantiate(
                     metric_cfg,
                     num_classes=num_classes,
                     task=task_type,
                     num_labels=num_classes,
                 )
-            )
+            else:
+                add_metric = hydra.utils.instantiate(metric_cfg)
+            additional_metrics.append(add_metric)
 
     return criterion, main_metric, valid_metric_best, MetricCollection(additional_metrics)

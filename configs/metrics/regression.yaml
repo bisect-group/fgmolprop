@@ -18,9 +18,3 @@ metrics:
       _target_: "torchmetrics.MeanAbsolutePercentageError"
     ExplainedVariance:
       _target_: "torchmetrics.ExplainedVariance"
-
-logging:
-  on_step: False
-  on_epoch: True
-  sync_dist: True
-  prog_bar: True

@@ -29,9 +29,7 @@ metrics:
       _target_: "torchmetrics.Recall"
       task: "binary"
       num_labels: 1
-
-logging:
-  on_step: False
-  on_epoch: True
-  sync_dist: True
-  prog_bar: True
+    PrecisionRecallCurve:
+      _target_: "torchmetrics.PrecisionRecallCurve"
+      task: "binary"
+      num_labels: 1
