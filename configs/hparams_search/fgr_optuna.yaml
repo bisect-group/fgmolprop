@@ -1,14 +1,22 @@
 # @package _global_
 
 # example hyperparameter optimization of some experiment with Optuna:
-# python train.py -m hparams_search=mnist_optuna experiment=example
+# python train.py -m hparams_search=fgr_optuna experiment=example
 
 defaults:
   - override /hydra/sweeper: optuna
+  - override /callbacks: rich_progress_bar
+
+# disable checkpointing to save disk space
+trainer:
+  enable_checkpointing: false
+
+# reduce n_folds to 3 to speed up training
+n_folds: 2
 
 # choose metric which will be optimized by Optuna
 # make sure this is the correct name of some metric logged in lightning module!
-optimized_metric: "val/acc_best"
+optimized_metric: "val/main_best"
 
 # here we define Optuna hyperparameter search
 # it optimizes for value returned from function with @hydra.main decorator
@@ -27,13 +35,13 @@ hydra:
     study_name: null
 
     # number of parallel workers
-    n_jobs: 1
+    n_jobs: 6
 
     # 'minimize' or 'maximize' the objective
     direction: maximize
 
     # total number of runs that will be executed
-    n_trials: 20
+    n_trials: 50
 
     # choose Optuna hyperparameter sampler
     # you can choose bayesian sampler (tpe), random search (without optimization), grid sampler, and others
@@ -45,8 +53,21 @@ hydra:
 
     # define hyperparameter search space
     params:
-      model.optimizer.lr: interval(0.0001, 0.1)
-      data.batch_size: choice(32, 64, 128, 256)
-      model.net.lin1_size: choice(64, 128, 256)
-      model.net.lin2_size: choice(64, 128, 256)
-      model.net.lin3_size: choice(32, 64, 128, 256)
+      model.optimizer.lr: tag(log, interval(0.00001, 0.1))
+      model.optimizer.weight_decay: tag(log, interval(0.00001, 0.1))
+      model.optimizer.rho: interval(0.0001, 0.9)
+      model.scheduler.max_lr: tag(log, interval(0.00001, 0.1))
+      model.net.hidden_dim1: choice(2048, 1024, 512, 256)
+      model.net.hidden_dim2: choice(2048, 1024, 512, 256)
+      model.net.hidden_dim3: choice(2048, 1024, 512, 256)
+      model.net.bottleneck_dim: choice(32, 64, 128, 256)
+      model.net.output_dim1: choice(32, 64, 128, 256)
+      model.net.output_dim2: choice(32, 64, 128, 256)
+      model.net.output_dim3: choice(32, 64, 128, 256)
+      model.net.dropout: range(0, 0.5, step=0.1)
+      model.net.activation: choice("relu", "silu", "mish", "elu", "gelu", "lrelu", "celu", "selu")
+      model.net.tie_weights: choice(true, false)
+      model.recon_loss.alpha: range(0.1, 1, step=0.1)
+      model.recon_loss.gamma: range(0, 5, step=0.5)
+      model.loss_weights.recon_loss: range(0.1, 1, step=0.1)
+      model.loss_weights.ubc_loss: range(0, 1, step=0.1)
