@@ -12,8 +12,6 @@ metrics:
       _target_: "torchmetrics.MeanAbsoluteError"
     R2Score:
       _target_: "torchmetrics.R2Score"
-    PearsonCorrCoef:
-      _target_: "torchmetrics.PearsonCorrCoef"
     MeanAbsolutePercentageError:
       _target_: "torchmetrics.MeanAbsolutePercentageError"
     ExplainedVariance:

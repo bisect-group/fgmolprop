@@ -29,7 +29,7 @@ metrics:
       _target_: "torchmetrics.Recall"
       task: "binary"
       num_labels: 1
-    PrecisionRecallCurve:
-      _target_: "torchmetrics.PrecisionRecallCurve"
+    AveragePrecision:
+      _target_: "torchmetrics.AveragePrecision"
       task: "binary"
       num_labels: 1

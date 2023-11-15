@@ -2,9 +2,10 @@ from typing import List, Tuple
 
 import hydra
 import torch.nn.init as init
+import torchmetrics
 from omegaconf import DictConfig
 from torch import nn
-from torchmetrics import Metric, MetricCollection
+from torchmetrics import Metric, MetricCollection, R2Score
 
 from src.data.components.global_dicts import ACTIVATION_FUNCTIONS, TASK_DICT
 
@@ -157,15 +158,17 @@ def load_metrics_criterion(
     additional_metrics = []
     if metrics_cfg.get("additional"):
         for _, metric_cfg in metrics_cfg.additional.items():
+            instantiate_args = {}
             if not is_regression:
-                add_metric = hydra.utils.instantiate(
-                    metric_cfg,
-                    num_classes=num_classes,
-                    task=task_type,
-                    num_labels=num_classes,
-                )
+                instantiate_args = {
+                    "num_classes": num_classes,
+                    "task": task_type,
+                    "num_labels": num_classes,
+                }
             else:
-                add_metric = hydra.utils.instantiate(metric_cfg)
+                if metric_cfg._target_ == "torchmetrics.R2Score":
+                    instantiate_args = {"num_outputs": num_classes}
+            add_metric = hydra.utils.instantiate(metric_cfg, **instantiate_args)
             additional_metrics.append(add_metric)
 
     return criterion, main_metric, valid_metric_best, MetricCollection(additional_metrics)
