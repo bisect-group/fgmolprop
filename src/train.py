@@ -126,20 +126,21 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
         # Update metric dict for each fold
         for key, value in train_metrics.items():
             if key in metric_dict:
-                metric_dict[key] += float(value)
+                metric_dict[key] += value
             else:
-                metric_dict[key] = float(value)
+                metric_dict[key] = value
 
         for key, value in test_metrics.items():
             if key in metric_dict:
-                metric_dict[key] += float(value)
+                metric_dict[key] += value
             else:
-                metric_dict[key] = float(value)
+                metric_dict[key] = value
 
         wandb.finish()
 
-    for key in metric_dict.keys():
-        metric_dict[key] /= cfg.get("n_folds")
+    if cfg.get("n_folds") > 1:
+        for key in metric_dict.keys():
+            metric_dict[key] /= cfg.get("n_folds")
 
     return metric_dict
 
