@@ -176,6 +176,10 @@ class FGRLitModule(LightningModule):
         scheduler = self.lr_schedulers()
         scheduler.step()  # type: ignore
 
+        # cast targets to int if not regression
+        if not self.trainer.datamodule.is_regression:  # type: ignore
+            targets = targets.int()
+
         # update and log metrics
         self.train_metric.update(logits, targets)
         self.train_add_metrics.update(logits, targets)
@@ -195,6 +199,10 @@ class FGRLitModule(LightningModule):
         :param batch_idx: The index of the current batch.
         """
         loss, logits, targets = self.model_step(batch)
+
+        # cast targets to int if not regression
+        if not self.trainer.datamodule.is_regression:  # type: ignore
+            targets = targets.int()
 
         # update and log metrics
         self.val_metric.update(logits, targets)
@@ -219,6 +227,10 @@ class FGRLitModule(LightningModule):
         :param batch_idx: The index of the current batch.
         """
         loss, logits, targets = self.model_step(batch)
+
+        # cast targets to int if not regression
+        if not self.trainer.datamodule.is_regression:  # type: ignore
+            targets = targets.int()
 
         # update and log metrics
         self.test_metric.update(logits, targets)
