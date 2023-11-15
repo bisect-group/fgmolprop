@@ -24,9 +24,13 @@ class FGRModel(nn.Module):
         frequency: int,
         dataset: str,
         descriptors: bool,
-        hidden_dims: List[int],
+        hidden_dim1: int,
+        hidden_dim2: int,
+        hidden_dim3: int,
         bottleneck_dim: int,
-        output_dims: List[int],
+        output_dim1: int,
+        output_dim2: int,
+        output_dim3: int,
         dropout: float,
         activation: str,
         tie_weights: bool,
@@ -40,9 +44,13 @@ class FGRModel(nn.Module):
         :param frequency: Frequency for tokenization
         :param dataset: Dataset to train on
         :param descriptors: Whether to use descriptors
-        :param hidden_dims: List of hidden dimensions
+        :param hidden_dim1: Hidden dimension 1
+        :param hidden_dim2: Hidden dimension 2
+        :param hidden_dim3: Hidden dimension 3
         :param bottleneck_dim: Dimension of bottleneck layer
-        :param output_dims: List of output dimensions
+        :param output_dim1: Output dimension 1
+        :param output_dim2: Output dimension 2
+        :param output_dim3: Output dimension 3
         :param dropout: Dropout rate
         :param activation: Activation function to use
         :param tie_weights: Whether to tie weights of encoder and decoder
@@ -54,6 +62,8 @@ class FGRModel(nn.Module):
         self.descriptors = descriptors
         self.tie_weights = tie_weights
         self.num_tasks, self.task_type, self.regression = TASK_DICT[dataset]
+        hidden_dims = sorted([hidden_dim1, hidden_dim2, hidden_dim3], reverse=True)
+        output_dims = sorted([output_dim1, output_dim2, output_dim3], reverse=True)
 
         if self.method == "FG":
             input_dim = fg_input_dim
@@ -112,7 +122,9 @@ class FGRPretrainModel(nn.Module):
         method: str,
         tokenize_dataset: str,
         frequency: int,
-        hidden_dims: List[int],
+        hidden_dim1: int,
+        hidden_dim2: int,
+        hidden_dim3: int,
         bottleneck_dim: int,
         activation: str,
         tie_weights: bool,
@@ -123,7 +135,9 @@ class FGRPretrainModel(nn.Module):
         :param method: Method for representation learning
         :param tokenize_dataset: Tokenization dataset
         :param frequency: Frequency for tokenization
-        :param hidden_dims: List of hidden dimensions
+        :param hidden_dim1: Hidden dimension 1
+        :param hidden_dim2: Hidden dimension 2
+        :param hidden_dim3: Hidden dimension 3
         :param bottleneck_dim: Dimension of bottleneck layer
         :param activation: Activation function to use
         :param tie_weights: Whether to tie weights of encoder and decoder
@@ -132,6 +146,7 @@ class FGRPretrainModel(nn.Module):
         super().__init__()
 
         self.tie_weights = tie_weights
+        hidden_dims = sorted([hidden_dim1, hidden_dim2, hidden_dim3], reverse=True)
 
         if method == "FG":
             input_dim = fg_input_dim

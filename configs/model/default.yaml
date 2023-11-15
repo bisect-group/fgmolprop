@@ -26,9 +26,13 @@ net:
   frequency: "${data.frequency}"
   dataset: "${data.dataset}"
   descriptors: "${data.descriptors}"
-  hidden_dims: [5196, 2048, 1024, 512]
+  hidden_dim1: 5196
+  hidden_dim2: 2048
+  hidden_dim3: 1024
   bottleneck_dim: 256
-  output_dims: [256, 128]
+  output_dim1: 256
+  output_dim2: 128
+  output_dim3: 64
   dropout: 0
   activation: "selu"
   tie_weights: False
