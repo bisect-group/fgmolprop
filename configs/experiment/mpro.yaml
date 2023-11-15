@@ -1,0 +1,15 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+
+data:
+  dataset: "sarscov2_3clpro_diamond"
+
+trainer:
+  max_epochs: 50
