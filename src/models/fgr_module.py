@@ -150,8 +150,9 @@ class FGRLitModule(LightningModule):
         targets = batch[-1]
         logits, z_d, x_hat = self.forward(batch[:-1])
         loss = self.criterion(logits, targets)
-        loss += self.loss_weights["recon_loss"] * self.recon_loss(x_hat, batch[0])
-        loss += self.loss_weights["ubc_loss"] * self.ubc_loss(z_d)
+        if self.trainer.state.stage == "train":
+            loss += self.loss_weights["recon_loss"] * self.recon_loss(x_hat, batch[0])
+            loss += self.loss_weights["ubc_loss"] * self.ubc_loss(z_d)
         return loss, logits, targets
 
     def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
