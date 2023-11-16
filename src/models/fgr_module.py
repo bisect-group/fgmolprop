@@ -93,10 +93,13 @@ class FGRLitModule(LightningModule):
         # metric objects for calculating and averaging accuracy across batches
         self.train_metric = main_metric.clone()
         self.train_add_metrics = additional_metrics.clone()
+        self.train_add_metrics.prefix = "train/"
         self.val_metric = main_metric.clone()
         self.val_add_metrics = additional_metrics.clone()
+        self.val_add_metrics.prefix = "val/"
         self.test_metric = main_metric.clone()
         self.test_add_metrics = additional_metrics.clone()
+        self.test_add_metrics.prefix = "test/"
 
         # for tracking best so far validation accuracy
         self.val_best = valid_metric_best.clone()
