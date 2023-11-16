@@ -43,3 +43,7 @@ ckpt_path: null
 
 # seed for random number generators in pytorch, numpy and python.random
 seed: 123
+
+# number of epochs to train
+trainer:
+  max_epochs: 2

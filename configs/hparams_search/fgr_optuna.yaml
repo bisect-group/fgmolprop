@@ -40,7 +40,7 @@ hydra:
     study_name: null
 
     # number of parallel workers
-    n_jobs: 6
+    n_jobs: 2
 
     # 'minimize' or 'maximize' the objective
     direction: maximize
