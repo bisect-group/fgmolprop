@@ -1,0 +1,9 @@
+_target_: src.data.datamodules.FGRPretrainDataModule
+
+data_dir: "${paths.data_dir}"
+dataset: "pubchem"
+method: "FG"
+frequency: 500
+batch_size: 16
+num_workers: 4
+pin_memory: True

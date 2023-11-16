@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Tuple
 
 import torch
 from torch import nn
@@ -149,15 +149,15 @@ class FGRPretrainModel(nn.Module):
         hidden_dims = sorted([hidden_dim1, hidden_dim2, hidden_dim3], reverse=True)
 
         if method == "FG":
-            input_dim = fg_input_dim
+            self.input_dim = fg_input_dim
         elif method == "MFG":
-            input_dim = MFG_INPUT_DIM[tokenize_dataset][frequency]
+            self.input_dim = MFG_INPUT_DIM[tokenize_dataset][frequency]
         elif method == "FGR":
-            input_dim = fg_input_dim + MFG_INPUT_DIM[tokenize_dataset][frequency]
+            self.input_dim = fg_input_dim + MFG_INPUT_DIM[tokenize_dataset][frequency]
         else:
             raise ValueError("Method not supported")
         self.encoder, self.decoder = make_encoder_decoder(
-            input_dim, hidden_dims, bottleneck_dim, activation
+            self.input_dim, hidden_dims, bottleneck_dim, activation
         )
         # Tie the weights of the encoder and decoder
         if self.tie_weights:

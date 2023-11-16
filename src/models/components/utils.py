@@ -2,10 +2,9 @@ from typing import List, Tuple
 
 import hydra
 import torch.nn.init as init
-import torchmetrics
 from omegaconf import DictConfig
 from torch import nn
-from torchmetrics import Metric, MetricCollection, R2Score
+from torchmetrics import Metric, MetricCollection
 
 from src.data.components.global_dicts import ACTIVATION_FUNCTIONS, TASK_DICT
 
@@ -171,4 +170,9 @@ def load_metrics_criterion(
             add_metric = hydra.utils.instantiate(metric_cfg, **instantiate_args)
             additional_metrics.append(add_metric)
 
-    return criterion, main_metric, valid_metric_best, MetricCollection(additional_metrics)
+    return (
+        criterion,
+        main_metric,
+        valid_metric_best,
+        MetricCollection(additional_metrics),
+    )
