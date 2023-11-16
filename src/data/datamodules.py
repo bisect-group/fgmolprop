@@ -415,6 +415,7 @@ class FGRPretrainDataModule(LightningDataModule):
             pin_memory=self.hparams["pin_memory"],
             shuffle=True,
             drop_last=True,
+            multiprocessing_context="fork",
         )
 
     def val_dataloader(self) -> DataLoader[Any]:
@@ -428,6 +429,7 @@ class FGRPretrainDataModule(LightningDataModule):
             num_workers=self.hparams["num_workers"],
             pin_memory=self.hparams["pin_memory"],
             shuffle=False,
+            multiprocessing_context="fork",
         )
 
     def teardown(self, stage: Optional[str] = None) -> None:
