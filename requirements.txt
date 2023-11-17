@@ -50,3 +50,4 @@ matplotlib
 jupyterlab
 ipywidgets
 SciencePlots @ git+https://github.com/garrettj403/SciencePlots
+umap-learn

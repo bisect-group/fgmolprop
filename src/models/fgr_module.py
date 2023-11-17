@@ -187,7 +187,7 @@ class FGRLitModule(LightningModule):
         # update and log metrics
         self.train_metric.update(logits, targets)
         self.train_add_metrics.update(logits, targets)
-        self.log("train/loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train/loss", loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log("train/main", self.train_metric, on_step=False, on_epoch=True, prog_bar=True)
         self.log_dict(self.train_add_metrics, on_step=False, on_epoch=True, prog_bar=True)
 
@@ -437,7 +437,7 @@ class FGRPretrainLitModule(LightningModule):
 
         # update and log metrics
         self.train_metric.update(x_hat, x)
-        self.log("train/loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train/loss", loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log("train/main", self.train_metric, on_step=False, on_epoch=True, prog_bar=True)
 
     def on_train_epoch_end(self) -> None:
