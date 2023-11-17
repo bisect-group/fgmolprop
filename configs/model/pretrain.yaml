@@ -23,9 +23,9 @@ net:
   method: "${data.method}"
   tokenize_dataset: "${data.dataset}"
   frequency: "${data.frequency}"
-  hidden_dim1: 5196
-  hidden_dim2: 2048
-  hidden_dim3: 1024
+  hidden_dim1: 2048
+  hidden_dim2: 1024
+  hidden_dim3: 512
   bottleneck_dim: 256
   activation: "selu"
   tie_weights: False
