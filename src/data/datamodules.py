@@ -216,6 +216,7 @@ class FGRDataModule(LightningDataModule):
                 pin_memory=self.hparams["pin_memory"],
                 sampler=self.sampler,
                 shuffle=False,
+                drop_last=True,
                 multiprocessing_context="fork",
             )
         else:
@@ -225,6 +226,7 @@ class FGRDataModule(LightningDataModule):
                 num_workers=self.hparams["num_workers"],
                 pin_memory=self.hparams["pin_memory"],
                 shuffle=True,
+                drop_last=True,
                 multiprocessing_context="fork",
             )
 
