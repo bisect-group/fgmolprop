@@ -10,10 +10,6 @@ from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
 
-torch.set_float32_matmul_precision("high")
-torch.set_num_threads(4)  # Set number of threads to 4
-torch.set_num_interop_threads(4)  # Set number of threads to 4
-
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # ------------------------------------------------------------------------------------ #
 # the setup_root above is equivalent to:
@@ -169,4 +165,5 @@ def main(cfg: DictConfig) -> Optional[float]:
 
 
 if __name__ == "__main__":
+    torch.set_float32_matmul_precision("high")  # Set high precision for matrix multiplication
     main()

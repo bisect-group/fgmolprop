@@ -17,7 +17,7 @@ n_folds: 2
 # set logger group to sweep_{method} to separate runs in wandb
 logger:
   wandb:
-    group: "sweep_${data.method}"
+    group: "sweep"
 
 # choose metric which will be optimized by Optuna
 # make sure this is the correct name of some metric logged in lightning module!

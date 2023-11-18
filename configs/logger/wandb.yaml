@@ -11,6 +11,6 @@ wandb:
   log_model: True # upload lightning ckpts
   prefix: "" # a string to put at the beginning of metric keys
   # entity: "" # set to name of your wandb team
-  group: "baseline_${data.method}"
+  group: "baseline"
   tags: []
   job_type: ""

@@ -21,7 +21,7 @@ def std_smiles(smiles: str) -> str | None:
         standard = standardize_smiles(smiles)
         MolFromSmiles(standard)
         return standard
-    except:  # noqa: E722
+    except BaseException:
         return None
 
 
@@ -34,7 +34,7 @@ def std_smarts(smarts: str) -> str | None:
     try:
         mol = MolFromSmarts(smarts)
         return MolToSmarts(mol)
-    except:  # noqa: E722
+    except BaseException:
         return None
 
 
