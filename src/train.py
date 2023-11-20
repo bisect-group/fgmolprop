@@ -122,15 +122,15 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
         # Update metric dict for each fold
         for key, value in train_metrics.items():
             if key in metric_dict:
-                metric_dict[key] += value
+                metric_dict[key] += value.float()
             else:
-                metric_dict[key] = value
+                metric_dict[key] = value.float()
 
         for key, value in test_metrics.items():
             if key in metric_dict:
-                metric_dict[key] += value
+                metric_dict[key] += value.float()
             else:
-                metric_dict[key] = value
+                metric_dict[key] = value.float()
 
         wandb.finish()
 
