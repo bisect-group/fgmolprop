@@ -5,5 +5,5 @@ dataset: "pubchem"
 method: "FG"
 frequency: 500
 batch_size: 16
-num_workers: 4
+num_workers: 16
 pin_memory: True

@@ -107,6 +107,11 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
             trainer.fit(model=_model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
         train_metrics = trainer.callback_metrics
+        for key, value in train_metrics.items():
+            if key in metric_dict:
+                metric_dict[key] += value.float()
+            else:
+                metric_dict[key] = value.float()
 
         if cfg.get("test"):
             log.info("Starting testing!")
@@ -116,28 +121,18 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
                 ckpt_path = None
             trainer.test(model=_model, datamodule=datamodule, ckpt_path=ckpt_path)
             log.info(f"Best ckpt path: {ckpt_path}")
-
-        test_metrics = trainer.callback_metrics
-
-        # Update metric dict for each fold
-        for key, value in train_metrics.items():
-            if key in metric_dict:
-                metric_dict[key] += value.float()
-            else:
-                metric_dict[key] = value.float()
-
-        for key, value in test_metrics.items():
-            if key in metric_dict:
-                metric_dict[key] += value.float()
-            else:
-                metric_dict[key] = value.float()
+            test_metrics = trainer.callback_metrics
+            for key, value in test_metrics.items():
+                if key in metric_dict:
+                    metric_dict[key] += value.float()
+                else:
+                    metric_dict[key] = value.float()
 
         wandb.finish()
 
     if cfg.get("n_folds") > 1:
         for key in metric_dict.keys():
             metric_dict[key] /= cfg.get("n_folds")
-
     return metric_dict
 
 
