@@ -3,7 +3,7 @@ _target_: src.data.datamodules.FGRDataModule
 data_dir: "${paths.data_dir}"
 dataset: "BBBP"
 method: "FG"
-descriptors: False
+descriptors: True
 tokenize_dataset: "pubchem"
 frequency: 500
 split_type: "scaffold"
