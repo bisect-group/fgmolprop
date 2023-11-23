@@ -65,7 +65,6 @@ hydra:
       model.optimizer.weight_decay: tag(log, interval(0.00001, 0.1))
       model.optimizer.rho: interval(0.0001, 0.9)
       model.scheduler.max_lr: tag(log, interval(0.00001, 0.1))
-      data.descriptors: choice(true, false)
       model.net.hidden_dim1: choice(2048, 1024, 512, 256)
       model.net.hidden_dim2: choice(2048, 1024, 512, 256)
       model.net.hidden_dim3: choice(2048, 1024, 512, 256)
