@@ -70,17 +70,7 @@ class FGRLitModule(LightningModule):
 
         # this line allows to access init params with 'self.hparams' attribute
         # also ensures init params will be stored in ckpt
-        self.save_hyperparameters(
-            logger=False,
-            ignore=[
-                "net",
-                "recon_loss",
-                "criterion",
-                "main_metric",
-                "valid_metric_best",
-                "additional_metrics",
-            ],
-        )
+        self.save_hyperparameters(logger=False)
         self.automatic_optimization = False
 
         self.net = net
@@ -337,13 +327,7 @@ class FGRPretrainLitModule(LightningModule):
 
         # this line allows to access init params with 'self.hparams' attribute
         # also ensures init params will be stored in ckpt
-        self.save_hyperparameters(
-            logger=False,
-            ignore=[
-                "net",
-                "recon_loss",
-            ],
-        )
+        self.save_hyperparameters(logger=False)
         self.automatic_optimization = False
 
         self.net = net
