@@ -115,6 +115,7 @@ class FGRLitModule(LightningModule):
                 model=self.trainer.model,  # type: ignore
                 log="all",
                 log_freq=100,
+                log_graph=False,
             )
 
     def ubc_loss(self, z_d: Any) -> Any:
@@ -367,6 +368,7 @@ class FGRPretrainLitModule(LightningModule):
                 model=self.trainer.model,  # type: ignore
                 log="all",
                 log_freq=100,
+                log_graph=False,
             )
 
     def ubc_loss(self, z_d: Any) -> Any:
