@@ -1,6 +1,7 @@
 from typing import List
 
 import modin.pandas as pd
+import numpy as np
 import tokenizers
 import torch
 from molvs import standardize_smiles
@@ -38,7 +39,7 @@ def std_smarts(smarts: str) -> str | None:
         return None
 
 
-def smiles2vector_fg(smi: str, fgroups_list: List[MolFromSmarts]) -> torch.Tensor:
+def smiles2vector_fg(smi: str, fgroups_list: List[MolFromSmarts]) -> np.ndarray:
     """Converts a SMILES string to a functional group vector.
 
     :param smi: SMILES string
@@ -46,14 +47,14 @@ def smiles2vector_fg(smi: str, fgroups_list: List[MolFromSmarts]) -> torch.Tenso
     :return: Feature vector
     """
     molecule = MolFromSmiles(smi)
-    v_1 = torch.zeros(len(fgroups_list), dtype=torch.float32)
+    v_1 = np.zeros(len(fgroups_list), dtype="f")
     for idx, f_g in enumerate(fgroups_list):
         if molecule.HasSubstructMatch(f_g):
             v_1[idx] = 1
     return v_1
 
 
-def smiles2vector_mfg(smi: str, tokenizer: tokenizers.Tokenizer) -> torch.Tensor:
+def smiles2vector_mfg(smi: str, tokenizer: tokenizers.Tokenizer) -> np.ndarray:
     """Converts a SMILES string to a molecular fingerprint vector.
 
     :param smi: SMILES string
@@ -61,7 +62,7 @@ def smiles2vector_mfg(smi: str, tokenizer: tokenizers.Tokenizer) -> torch.Tensor
     :return: Feature vector
     """
     idx = tokenizer.encode(smi).ids
-    mfg = torch.zeros(tokenizer.get_vocab_size(), dtype=torch.float32)
+    mfg = np.zeros(tokenizer.get_vocab_size(), dtype="f")
     mfg[idx] = 1
     return mfg
 

@@ -27,6 +27,7 @@ sh            # for running bash commands in some tests (linux/macos only)
 omegaconf
 tqdm
 pynvml
+pickleshare
 
 # --------- chemistry --------- #
 molvs
@@ -38,10 +39,11 @@ CIRpy
 
 # --------- dataframe manipulation --------- #
 modin
-ray
+ray==2.6.0
 grpcio
 pyarrow
 openpyxl
+h5py
 
 # --------- visualization --------- #
 seaborn
