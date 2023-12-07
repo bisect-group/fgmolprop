@@ -38,8 +38,7 @@ rdkit
 CIRpy
 
 # --------- dataframe manipulation --------- #
-modin
-ray==2.6.0
+pandarallel
 grpcio
 pyarrow
 openpyxl

@@ -1,9 +1,8 @@
 from typing import List
 
-import modin.pandas as pd
 import numpy as np
+import pandas as pd
 import tokenizers
-import torch
 from molvs import standardize_smiles
 from rdkit import RDLogger
 from rdkit.Chem.rdmolfiles import MolFromSmarts, MolFromSmiles, MolToSmarts
