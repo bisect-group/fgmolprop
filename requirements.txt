@@ -39,7 +39,7 @@ CIRpy
 
 # --------- dataframe manipulation --------- #
 modin
-ray==2.6.0
+ray==2.8.1
 grpcio
 pyarrow
 openpyxl
