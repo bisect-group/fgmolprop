@@ -1,6 +1,7 @@
 from typing import List
 
 import numpy as np
+import pandas as pd
 import torch
 from rdkit import RDLogger
 from rdkit.Chem.rdmolfiles import MolFromSmarts
@@ -63,27 +64,34 @@ class FGRPretrainDataset(BaseDataset):
 
     def __init__(
         self,
-        smiles: List[str],
-        fgroups_list: List[MolFromSmarts],
-        tokenizer: Tokenizer,
+        df: pd.DataFrame,
         method: str,
     ) -> None:
         """Initialize 'FGRPretrainDataset'.
 
-        :param smiles: List of SMILES
-        :param fgroups_list: List of functional groups
-        :param tokenizer: Pretrained tokenizer
+        :param df: Dataframe with SMILES
         :param method: Method for training
         """
-        self.smiles = smiles
-        self.fgroups_list = fgroups_list
-        self.tokenizer = tokenizer
+        self.df = df
         self.method = method
 
     def __len__(self):
-        return len(self.smiles)
+        return len(self.df)
 
     def __getitem__(self, idx):
-        smi = self.smiles[idx]  # Get SMILES
-        x = self._process_smi_(smi)  # Get feature vector
+        fg_idx, mfg_idx = self.df.loc[idx, ["fg", "mfg"]]  # Get SMILES
+        if self.method == "FG":
+            x = np.zeros(2672, dtype=np.float32)
+            x[fg_idx] = 1
+        elif self.method == "MFG":
+            x = np.zeros(30000, dtype=np.float32)
+            x[mfg_idx] = 1
+        elif self.method == "FGR":
+            f_g = np.zeros(2672, dtype=np.float32)
+            f_g[fg_idx] = 1
+            mfg = np.zeros(30000, dtype=np.float32)
+            mfg[mfg_idx] = 1
+            x = np.concatenate((f_g, mfg))  # Concatenate both vectors
+        else:
+            raise ValueError("Method not supported")  # Raise error if method not supported
         return x

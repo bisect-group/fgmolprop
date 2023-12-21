@@ -200,7 +200,8 @@ class FGRDataModule(LightningDataModule):
                 samples_weight = torch.tensor([class_weights[t] for t in labels.int()])
                 # Define the sampler
                 self.sampler = WeightedRandomSampler(
-                    weights=samples_weight, num_samples=len(samples_weight)  # type: ignore
+                    weights=samples_weight,  # type: ignore
+                    num_samples=len(samples_weight),  # type: ignore
                 )
 
     def train_dataloader(self) -> DataLoader[Any]:
@@ -378,32 +379,16 @@ class FGRPretrainDataModule(LightningDataModule):
                 "training",
                 self.hparams["dataset"],
             )
-        )["SMILES"].tolist()
+        )
 
         # Split data
         train, valid = train_test_split(df, test_size=0.1, random_state=123)
-
-        # Get functional groups
-        fgroups = pd.read_parquet(os.path.join(self.hparams["data_dir"], "training", "fg"))[
-            "SMARTS"
-        ].tolist()
-        fgroups_list = [MolFromSmarts(x) for x in fgroups]
-
-        # Get tokenizer
-        tokenizer = Tokenizer.from_file(
-            os.path.join(
-                self.hparams["data_dir"],
-                "training",
-                "tokenizers",
-                f"BPE_{self.hparams['dataset']}_{self.hparams['frequency']}.json",
-            )
-        )
+        train = train.reset_index(drop=True)
+        valid = valid.reset_index(drop=True)
 
         # Create datasets
-        self.data_train = FGRPretrainDataset(
-            train, fgroups_list, tokenizer, self.hparams["method"]
-        )
-        self.data_val = FGRPretrainDataset(valid, fgroups_list, tokenizer, self.hparams["method"])
+        self.data_train = FGRPretrainDataset(train, self.hparams["method"])
+        self.data_val = FGRPretrainDataset(valid, self.hparams["method"])
 
     def train_dataloader(self) -> DataLoader[Any]:
         """Create and return the train dataloader.

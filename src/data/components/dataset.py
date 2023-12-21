@@ -39,21 +39,13 @@ class BaseDataset(Dataset):
         if self.method == "FG":
             x = smiles2vector_fg(smi, self.fgroups_list)  # Get functional group vector
         elif self.method == "MFG":
-            x = smiles2vector_mfg(
-                smi, self.tokenizer
-            )  # Get mined functional group vector
+            x = smiles2vector_mfg(smi, self.tokenizer)  # Get mined functional group vector
         elif self.method == "FGR":
-            f_g = smiles2vector_fg(
-                smi, self.fgroups_list
-            )  # Get functional group vector
-            mfg = smiles2vector_mfg(
-                smi, self.tokenizer
-            )  # Get mined functional group vector
+            f_g = smiles2vector_fg(smi, self.fgroups_list)  # Get functional group vector
+            mfg = smiles2vector_mfg(smi, self.tokenizer)  # Get mined functional group vector
             x = np.concatenate((f_g, mfg))  # Concatenate both vectors
         else:
-            raise ValueError(
-                "Method not supported"
-            )  # Raise error if method not supported
+            raise ValueError("Method not supported")  # Raise error if method not supported
         return x
 
     def _get_descriptors_(self, smi: str) -> np.ndarray:
