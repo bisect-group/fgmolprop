@@ -137,9 +137,9 @@ class FGRDataModule(LightningDataModule):
         labels = data.drop(columns=["SMILES"]).values
 
         # Get functional groups
-        fgroups = pd.read_parquet(os.path.join(self.hparams["data_dir"], "training", "fg"))[
-            "SMARTS"
-        ].tolist()
+        fgroups = pd.read_parquet(
+            os.path.join(self.hparams["data_dir"], "training", "fg.parquet")
+        )["SMARTS"].tolist()
         fgroups_list = [MolFromSmarts(x) for x in fgroups]
 
         # Get tokenizer

@@ -68,7 +68,7 @@ class BaseDataset(Dataset):
             descriptors, nan=0.0, posinf=0.0, neginf=0.0
         )  # Replace NaNs with 0
         descriptors = descriptors / np.linalg.norm(descriptors)  # Normalize
-        return descriptors
+        return descriptors.astype(np.float32)
 
     def __getitem__(self, index: int) -> Any:
         """Get item from dataset.
