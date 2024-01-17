@@ -7,6 +7,7 @@ import rootutils
 import torch
 import wandb
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
+from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
 
@@ -82,6 +83,10 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
 
         log.info("Instantiating callbacks...")
         callbacks: List[Callback] = instantiate_callbacks(cfg.get("callbacks"))
+
+        for callback in callbacks:
+            if isinstance(callback, ModelCheckpoint):
+                callback.dirpath = f"{callback.dirpath}/fold_{fold_idx}/{cfg.data.descriptors}"
 
         log.info("Instantiating loggers...")
         logger: List[Logger] = instantiate_loggers(cfg.get("logger"))

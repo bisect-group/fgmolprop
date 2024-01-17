@@ -1,8 +1,7 @@
 from typing import Any, List
 
 import numpy as np
-from rdkit.Chem import Descriptors
-from rdkit.Chem.rdmolfiles import MolFromSmarts, MolFromSmiles
+from rdkit.Chem.rdmolfiles import MolFromSmarts
 from tokenizers import Tokenizer
 from torch.utils.data import Dataset
 
@@ -47,28 +46,6 @@ class BaseDataset(Dataset):
         else:
             raise ValueError("Method not supported")  # Raise error if method not supported
         return x
-
-    def _get_descriptors_(self, smi: str) -> np.ndarray:
-        """Get descriptors from SMILES string.
-
-        :param smi: SMILES string
-        :return: Descriptor vector
-        """
-        mol = MolFromSmiles(smi)  # Get molecule from SMILES string
-
-        # Get descriptors
-        desc_list = []
-        for _, func in Descriptors._descList:
-            try:
-                desc_list.append(func(mol))
-            except BaseException:
-                desc_list.append(0)
-        descriptors = np.asarray(desc_list)
-        descriptors = np.nan_to_num(
-            descriptors, nan=0.0, posinf=0.0, neginf=0.0
-        )  # Replace NaNs with 0
-        descriptors = descriptors / np.linalg.norm(descriptors)  # Normalize
-        return descriptors.astype(np.float32)
 
     def __getitem__(self, index: int) -> Any:
         """Get item from dataset.

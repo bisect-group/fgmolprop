@@ -8,6 +8,7 @@ from rdkit.Chem.rdmolfiles import MolFromSmarts
 from tokenizers import Tokenizer
 
 from src.data.components.dataset import BaseDataset
+from src.data.components.utils import get_descriptors
 
 lg = RDLogger.logger()
 lg.setLevel(RDLogger.CRITICAL)
@@ -49,7 +50,7 @@ class FGRDataset(BaseDataset):
         target = self.labels[idx]  # Get label
         x = self._process_smi_(smi)  # Get feature vector
         if self.descriptors:
-            descriptors = self._get_descriptors_(smi)  # Get descriptors
+            descriptors = get_descriptors(smi)  # Get descriptors
             return (
                 x,
                 descriptors,

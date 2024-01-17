@@ -5,6 +5,7 @@ import pandas as pd
 import tokenizers
 from molvs import standardize_smiles
 from rdkit import RDLogger
+from rdkit.Chem import Descriptors
 from rdkit.Chem.rdmolfiles import MolFromSmarts, MolFromSmiles, MolToSmarts
 
 lg = RDLogger.logger()
@@ -51,6 +52,32 @@ def smiles2vector_fg(smi: str, fgroups_list: List[MolFromSmarts]) -> np.ndarray:
         if molecule.HasSubstructMatch(f_g):
             v_1[idx] = 1
     return v_1
+
+
+def get_descriptors(smi: str) -> np.ndarray:
+    """Get descriptors from a SMILES string.
+
+    :param smi: SMILES string
+    :return: Descriptor vector
+    """
+    desc_arrays = []
+    mol = MolFromSmiles(smi)  # Get molecule from self.smiles string
+
+    # Get descriptors
+    desc_list = []
+    for _, func in Descriptors._descList:
+        try:
+            desc_list.append(func(mol))
+        except BaseException:
+            desc_list.append(0)
+    descriptors = np.array(desc_list, dtype=np.float32)
+    descriptors = np.nan_to_num(
+        descriptors, nan=0.0, posinf=0.0, neginf=0.0
+    )  # Replace NaNs with 0
+    descriptors = descriptors / np.linalg.norm(descriptors)  # Normalize
+    desc_arrays.append(descriptors)
+
+    return np.asarray(desc_arrays)
 
 
 def smiles2vector_mfg(smi: str, tokenizer: tokenizers.Tokenizer) -> np.ndarray:
