@@ -50,7 +50,7 @@ class FGRDataset(BaseDataset):
         target = self.labels[idx]  # Get label
         x = self._process_smi_(smi)  # Get feature vector
         if self.descriptors:
-            descriptors = get_descriptors(smi).reshape(-1)  # Get descriptors
+            descriptors = get_descriptors(smi)  # Get descriptors
             return (
                 x,
                 descriptors,

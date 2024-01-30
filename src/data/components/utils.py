@@ -60,7 +60,6 @@ def get_descriptors(smi: str) -> np.ndarray:
     :param smi: SMILES string
     :return: Descriptor vector
     """
-    desc_arrays = []
     mol = MolFromSmiles(smi)  # Get molecule from self.smiles string
 
     # Get descriptors
@@ -70,14 +69,12 @@ def get_descriptors(smi: str) -> np.ndarray:
             desc_list.append(func(mol))
         except BaseException:
             desc_list.append(0)
-    descriptors = np.array(desc_list, dtype=np.float32)
+    descriptors = np.asarray(desc_list,dtype=np.float32)
     descriptors = np.nan_to_num(
         descriptors, nan=0.0, posinf=0.0, neginf=0.0
     )  # Replace NaNs with 0
     descriptors = descriptors / np.linalg.norm(descriptors)  # Normalize
-    desc_arrays.append(descriptors)
-
-    return np.asarray(desc_arrays)
+    return descriptors
 
 
 def smiles2vector_mfg(smi: str, tokenizer: tokenizers.Tokenizer) -> np.ndarray:
