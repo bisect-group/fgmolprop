@@ -265,7 +265,6 @@ class FGRLitModule(LightningModule):
         if self.hparams["scheduler"] is not None:
             scheduler = self.hparams["scheduler"](
                 optimizer=optimizer,
-                total_steps=self.trainer.estimated_stepping_batches,
             )
             lr_scheduler = {"scheduler": scheduler}
             return {"optimizer": optimizer, "lr_scheduler": lr_scheduler}

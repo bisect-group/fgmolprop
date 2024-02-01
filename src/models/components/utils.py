@@ -36,14 +36,14 @@ def make_encoder_decoder(
         raise ValueError("Activation function not supported")
 
     for enc_dim in hidden_dims:
-        encoder_layers.extend([nn.Linear(input_dim, enc_dim), nn.LayerNorm(enc_dim), act_fn])
+        encoder_layers.extend([nn.Linear(input_dim, enc_dim), nn.BatchNorm1d(enc_dim), act_fn])
         input_dim = enc_dim
 
     encoder_layers.append(nn.Linear(input_dim, bottleneck_dim))
 
     dec_dims = list(reversed(hidden_dims))
     for dec_dim in dec_dims:
-        decoder_layers.extend([nn.Linear(dec_shape, dec_dim), nn.LayerNorm(dec_dim), act_fn])
+        decoder_layers.extend([nn.Linear(dec_shape, dec_dim), nn.BatchNorm1d(dec_dim), act_fn])
         dec_shape = dec_dim
 
     decoder_layers.append(nn.Linear(dec_shape, output_dim))
@@ -81,7 +81,7 @@ def make_predictor(
         layers.extend(
             [
                 nn.Linear(fcn_input_dim, output_dim),
-                nn.LayerNorm(output_dim),
+                nn.BatchNorm1d(output_dim),
                 act_fn,
             ]
         )

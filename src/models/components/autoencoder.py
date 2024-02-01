@@ -8,7 +8,6 @@ from src.models.components.utils import (
     make_encoder_decoder,
     make_predictor,
     tie_decoder_weights,
-    weight_init,
 )
 
 
@@ -89,11 +88,6 @@ class FGRModel(nn.Module):
         self.predictor = make_predictor(
             fcn_input_dim, output_dims, activation, self.num_tasks, dropout
         )
-
-        # Initialize weights
-        weight_init(self.encoder, activation)
-        weight_init(self.decoder, activation)
-        weight_init(self.predictor, activation)
 
     def forward(
         self, x: torch.Tensor, num_feat: torch.Tensor | None = None

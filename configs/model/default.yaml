@@ -1,7 +1,7 @@
 _target_: src.models.fgr_module.FGRLitModule
 
 base_optimizer:
-  _target_: torch.optim.AdamW
+  _target_: torch.optim.SGD
   _partial_: true
 
 optimizer:
@@ -13,9 +13,10 @@ optimizer:
   adaptive: true
 
 scheduler:
-  _target_: torch.optim.lr_scheduler.OneCycleLR
+  _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
   _partial_: true
-  max_lr: 1.0e-2
+  T_0: 50
+  T_mult: 2
 
 net:
   _target_: src.models.components.autoencoder.FGRModel
@@ -34,7 +35,7 @@ net:
   output_dim2: 128
   output_dim3: 64
   dropout: 0
-  activation: "selu"
+  activation: "relu"
   tie_weights: False
 
 recon_loss:
@@ -44,7 +45,7 @@ recon_loss:
 
 loss_weights:
   recon_loss: 1.0
-  ubc_loss: 0.0
+  ubc_loss: 1.0
 
 # compile model for faster training with pytorch 2.0
 compile: false

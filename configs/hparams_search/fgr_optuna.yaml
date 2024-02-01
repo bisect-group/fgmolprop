@@ -20,7 +20,7 @@ test: false
 # set logger group to sweep_{method} to separate runs in wandb
 logger:
   wandb:
-    group: "sweep"
+    group: "sweep_${data.descriptors}"
 
 # choose metric which will be optimized by Optuna
 # make sure this is the correct name of some metric logged in lightning module!
@@ -64,7 +64,8 @@ hydra:
       model.optimizer.lr: tag(log, interval(0.00001, 0.1))
       model.optimizer.weight_decay: tag(log, interval(0.00001, 0.1))
       model.optimizer.rho: tag(log, interval(0.00001, 0.9))
-      model.scheduler.max_lr: tag(log, interval(0.00001, 0.1))
+      model.scheduler.T_0: choice(10, 20, 30, 40, 50, 100)
+      model.scheduler.T_mult: choice(1, 2, 3, 4, 5)
       model.net.hidden_dim1: choice(2048, 1024, 512, 256)
       model.net.hidden_dim2: choice(2048, 1024, 512, 256)
       model.net.hidden_dim3: choice(2048, 1024, 512, 256)
@@ -77,5 +78,5 @@ hydra:
       model.net.tie_weights: choice(true, false)
       model.recon_loss.alpha: range(0.1, 1, step=0.1)
       model.recon_loss.gamma: range(0, 5, step=0.5)
-      model.loss_weights.recon_loss: range(0.1, 10, step=0.1)
-      model.loss_weights.ubc_loss: range(0, 1, step=0.1)
+      model.loss_weights.recon_loss: range(0, 100, step=5)
+      model.loss_weights.ubc_loss: range(0, 10, step=1)

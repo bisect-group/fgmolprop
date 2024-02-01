@@ -1,3 +1,4 @@
+import warnings
 from copy import deepcopy
 from typing import Any, Dict, List, Optional
 
@@ -11,6 +12,7 @@ from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
 
+warnings.filterwarnings("ignore", category=RuntimeWarning)  # Ignore RuntimeWarning from numpy
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # ------------------------------------------------------------------------------------ #
 # the setup_root above is equivalent to:

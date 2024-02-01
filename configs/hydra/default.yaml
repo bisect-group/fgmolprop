@@ -20,4 +20,4 @@ job_logging:
       filename: ${hydra.runtime.output_dir}/${task_name}.log
 
 launcher:
-  n_jobs: 2
+  n_jobs: 3
