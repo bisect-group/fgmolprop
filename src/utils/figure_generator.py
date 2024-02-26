@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import rootutils
+import scienceplots  # noqa: F401
 import seaborn as sns
 import torch
 from captum.attr import (
@@ -19,6 +20,7 @@ from captum.attr import (
     FeatureAblation,
     GradientShap,
     IntegratedGradients,
+    KernelShap,
     NoiseTunnel,
 )
 from rdkit.Chem import Descriptors, Draw
@@ -403,12 +405,13 @@ class FigureGenerator:
             / "test.parquet"
         )["SMILES"].to_list()
         x = self.get_representation(test_smiles, "FGR")
-        desc = np.concatenate([get_descriptors(smi) for smi in test_smiles], axis=0)
+        desc = np.stack([get_descriptors(smi) for smi in test_smiles], axis=0)
         ckpt_path = glob.glob(
             f"./logs/train/*/*/{self.dataset}/FGR/scaffold/checkpoints/fold_{fold_idx}/{self.descriptor}/epoch_*.ckpt"
         )[0]
         model = FGRLitModule.load_from_checkpoint(ckpt_path).to("cpu")
         wrapped_model = WrapperModel(model)
+        wrapped_model.eval()
         x = torch.tensor(x, dtype=torch.float32, device=model.device)
         desc = torch.tensor(desc, dtype=torch.float32, device=model.device)
         return x, desc, wrapped_model
@@ -443,6 +446,7 @@ class FigureGenerator:
             "Int Grads w/SmoothGrad": lambda model: NoiseTunnel(IntegratedGradients(model)),
             "DeepLiftShap": DeepLiftShap,
             "GradientShap": GradientShap,
+            "KernelShap": KernelShap,
             "Feature Ablation": FeatureAblation,
         }
 

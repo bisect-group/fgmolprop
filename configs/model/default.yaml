@@ -9,6 +9,8 @@ optimizer:
   _partial_: true
   lr: 0.001
   weight_decay: 0.001
+  nesterov: true
+  momentum: 0.9
   rho: 0.05
   adaptive: true
 

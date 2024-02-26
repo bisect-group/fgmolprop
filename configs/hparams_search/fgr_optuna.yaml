@@ -43,7 +43,7 @@ hydra:
     study_name: ${data.dataset}_${data.method}
 
     # number of parallel workers
-    n_jobs: 2
+    n_jobs: 3
 
     # 'minimize' or 'maximize' the objective
     direction: maximize
@@ -63,7 +63,9 @@ hydra:
     params:
       model.optimizer.lr: tag(log, interval(0.00001, 0.1))
       model.optimizer.weight_decay: tag(log, interval(0.00001, 0.1))
-      model.optimizer.rho: tag(log, interval(0.00001, 0.9))
+      model.optimizer.momentum: range(0, 1, step=0.1)
+      model.optimizer.rho: choice(0.01, 0.02, 0.05, 0.1, 0.2, 0.5)
+      model.optimizer.adaptive: choice(true, false)
       model.scheduler.T_0: choice(10, 20, 30, 40, 50, 100)
       model.scheduler.T_mult: choice(1, 2, 3, 4, 5)
       model.net.hidden_dim1: choice(2048, 1024, 512, 256)
