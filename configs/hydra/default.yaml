@@ -10,7 +10,7 @@ defaults:
 run:
   dir: ${paths.log_dir}/${task_name}/runs/${now:%Y-%m-%d}_${now:%H-%M-%S}/${data.dataset}/${data.method}/${data.split_type}
 sweep:
-  dir: ${paths.log_dir}/${task_name}/multiruns/${now:%Y-%m-%d}_${now:%H-%M-%S}/${data.dataset}/${data.method}/${data.split_type}
+  dir: ${paths.log_dir}/${task_name}/multiruns/${now:%Y-%m-%d}_${now:%H-%M-%S}/${data.dataset}/${data.method}/${data.split_type}/${data.descriptors}
   subdir: ${hydra.job.num}
 
 job_logging:

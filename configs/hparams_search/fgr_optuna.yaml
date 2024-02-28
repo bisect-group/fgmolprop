@@ -40,7 +40,7 @@ hydra:
     storage: null
 
     # name of the study to persist optimization results
-    study_name: ${data.dataset}_${data.method}
+    study_name: ${data.dataset}_${data.method}_${data.descriptors}
 
     # number of parallel workers
     n_jobs: 3
