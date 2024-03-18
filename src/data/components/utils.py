@@ -69,12 +69,12 @@ def get_descriptors(smi: str) -> np.ndarray:
             desc_list.append(func(mol))
         except BaseException:
             desc_list.append(0)
-    descriptors = np.asarray(desc_list, dtype=np.float32)
+    descriptors = np.asarray(desc_list)
     descriptors = np.nan_to_num(
         descriptors, nan=0.0, posinf=0.0, neginf=0.0
     )  # Replace NaNs with 0
     descriptors = descriptors / np.linalg.norm(descriptors)  # Normalize
-    return descriptors
+    return descriptors.astype(np.float32)
 
 
 def smiles2vector_mfg(smi: str, tokenizer: tokenizers.Tokenizer) -> np.ndarray:
