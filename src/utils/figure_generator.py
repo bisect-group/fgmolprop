@@ -1,5 +1,6 @@
 import glob
 import os
+import pickle
 import textwrap
 import warnings
 from collections import defaultdict
@@ -18,9 +19,9 @@ from captum.attr import (
     Attribution,
     DeepLiftShap,
     FeatureAblation,
+    FeaturePermutation,
     GradientShap,
     IntegratedGradients,
-    KernelShap,
     NoiseTunnel,
 )
 from rdkit.Chem import Descriptors, Draw
@@ -428,8 +429,14 @@ class FigureGenerator:
         """
         x.requires_grad = True
         desc.requires_grad = True
-        baselines = (torch.zeros_like(x), torch.zeros_like(desc))
-        attribution = attribution_model.attribute((x, desc), baselines=baselines)
+
+        # Do not apply baselines for FeaturePermutation
+        if isinstance(attribution_model, FeaturePermutation):
+            attribution = attribution_model.attribute((x, desc))
+        else:
+            baselines = (torch.zeros_like(x), torch.zeros_like(desc))
+            attribution = attribution_model.attribute((x, desc), baselines=baselines)
+
         attribution_sum = np.concatenate(
             [attr.cpu().detach().numpy() for attr in attribution], axis=1
         ).sum(0)
@@ -444,10 +451,10 @@ class FigureGenerator:
         methods = {
             "Int Grads": IntegratedGradients,
             "Int Grads w/SmoothGrad": lambda model: NoiseTunnel(IntegratedGradients(model)),
-            "DeepLiftShap": DeepLiftShap,
             "GradientShap": GradientShap,
-            "KernelShap": KernelShap,
+            "DeepLiftShap": DeepLiftShap,
             "Feature Ablation": FeatureAblation,
+            "Feature Permutation": FeaturePermutation,
         }
 
         attributions = {
@@ -461,16 +468,34 @@ class FigureGenerator:
 
         # Calculate the average attributions
         average_attributions = {name: np.mean(attr, axis=0) for name, attr in attributions.items()}
+
+        # Save the average_attributions dictionary
+        with open(self.dataset_dir / "average_attributions.pkl", "wb") as f:
+            pickle.dump(average_attributions, f)
+
         return average_attributions
 
     def plot_attribution(self) -> None:
         """Plot attribution scores."""
-        average_attributions = self.get_average_attribution()
+        try:
+            with open(self.dataset_dir / "average_attributions.pkl", "rb") as f:
+                average_attributions = pickle.load(f)
+        except (FileNotFoundError, OSError):
+            average_attributions = self.get_average_attribution()
+
         # Calculate the average attribution across methods
         average_attribution = sum(average_attributions.values()) / len(average_attributions)
 
         # Get the top 10 indices
-        final_ind = average_attribution.argsort()[-20:]  # type: ignore
+        sorted_indices = np.abs(average_attribution).argsort()  # type: ignore
+
+        # Get the first top 10
+        first_top_10 = sorted_indices[-10:]
+
+        # Get the top 10 after 2672
+        top_10_after_2672 = sorted_indices[2672 : 2672 + 10]
+
+        final_ind = first_top_10 + top_10_after_2672
 
         # Pre-calculate common values
         num_keys = len(average_attributions.keys())
@@ -499,10 +524,9 @@ class FigureGenerator:
             height=4,
             aspect=3,
         )
-        g.despine(left=True)
 
         # Set title
-        g.fig.suptitle(r"$\textbf{Interpretability Analysis:}$" f"{self.dataset}")
+        g.ax.set_title(r"$\textbf{Interpretability Analysis:}$" f"{self.dataset}")
 
         # Set x and y labels to bold
         g.set_axis_labels("Attribution", "Features")
