@@ -1,0 +1,42 @@
+# @package _global_
+# summary.val/main_best: 1.3568795323371887
+defaults:
+  - override /data: default
+  - override /metrics: regression
+  - override /trainer: gpu
+  - override /callbacks: default
+data:
+  dataset: ESOL
+  method: MFG
+  descriptors: true
+trainer:
+  max_epochs: 50
+model_checkpoint:
+  mode: min
+model:
+  optimizer:
+    lr: 0.05508731872767587
+    weight_decay: 0.017446470882353803
+    momentum: 0.2
+    rho: 0.05
+    adaptive: true
+  scheduler:
+    T_0: 10
+    T_mult: 3
+  net:
+    hidden_dim1: 2048
+    hidden_dim2: 256
+    hidden_dim3: 256
+    bottleneck_dim: 128
+    output_dim1: 32
+    output_dim2: 32
+    output_dim3: 32
+    dropout: 0.2
+    activation: lrelu
+    tie_weights: false
+  recon_loss:
+    alpha: 0.9
+    gamma: 1.5
+  loss_weights:
+    recon_loss: 25
+    ubc_loss: 5

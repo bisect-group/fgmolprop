@@ -1,0 +1,42 @@
+# @package _global_
+# summary.val/main_best: 1.0559199452400208
+defaults:
+  - override /data: default
+  - override /metrics: regression
+  - override /trainer: gpu
+  - override /callbacks: default
+data:
+  dataset: ESOL
+  method: FGR
+  descriptors: true
+trainer:
+  max_epochs: 50
+model_checkpoint:
+  mode: min
+model:
+  optimizer:
+    lr: 0.006365568555644549
+    weight_decay: 0.007252473619758208
+    momentum: 0.6
+    rho: 0.02
+    adaptive: true
+  scheduler:
+    T_0: 20
+    T_mult: 4
+  net:
+    hidden_dim1: 2048
+    hidden_dim2: 256
+    hidden_dim3: 1024
+    bottleneck_dim: 128
+    output_dim1: 32
+    output_dim2: 256
+    output_dim3: 256
+    dropout: 0.30000000000000004
+    activation: lrelu
+    tie_weights: true
+  recon_loss:
+    alpha: 1.0
+    gamma: 2.5
+  loss_weights:
+    recon_loss: 15
+    ubc_loss: 9

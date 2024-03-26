@@ -87,7 +87,10 @@ def get_experiment(dataset: str) -> None:
     # Flatten the DataFrame
     flattened_df = pd.json_normalize(runs_df.to_dict(orient="records"))
     flattened_df = flattened_df[columns]
-
+    # Replace "Infinity" with np.nan and drop the rows with np.nan
+    flattened_df = flattened_df.replace("Infinity", np.nan).dropna(
+        subset=["summary.val/main_best"]
+    )
     # Group and aggregate the data
     grouped_df = (
         flattened_df.groupby(columns[:-1]).agg({"summary.val/main_best": "mean"}).reset_index()

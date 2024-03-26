@@ -1,0 +1,42 @@
+# @package _global_
+# summary.val/main_best: 0.8150828182697296
+defaults:
+  - override /data: default
+  - override /metrics: regression
+  - override /trainer: gpu
+  - override /callbacks: default
+data:
+  dataset: Lipop
+  method: FGR
+  descriptors: false
+trainer:
+  max_epochs: 50
+model_checkpoint:
+  mode: min
+model:
+  optimizer:
+    lr: 0.0008511170887432985
+    weight_decay: 0.0005423684910798067
+    momentum: 0.8
+    rho: 0.01
+    adaptive: true
+  scheduler:
+    T_0: 20
+    T_mult: 4
+  net:
+    hidden_dim1: 1024
+    hidden_dim2: 1024
+    hidden_dim3: 1024
+    bottleneck_dim: 128
+    output_dim1: 128
+    output_dim2: 256
+    output_dim3: 64
+    dropout: 0.30000000000000004
+    activation: gelu
+    tie_weights: true
+  recon_loss:
+    alpha: 0.7000000000000001
+    gamma: 0.0
+  loss_weights:
+    recon_loss: 100
+    ubc_loss: 2

@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.8624073266983032
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: BACE
+  method: MFG
+  descriptors: false
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 0.00026722087115369706
+    weight_decay: 0.016923163449423607
+    momentum: 0.8
+    rho: 0.2
+    adaptive: false
+  scheduler:
+    T_0: 50
+    T_mult: 5
+  net:
+    hidden_dim1: 1024
+    hidden_dim2: 256
+    hidden_dim3: 1024
+    bottleneck_dim: 64
+    output_dim1: 128
+    output_dim2: 256
+    output_dim3: 256
+    dropout: 0.2
+    activation: selu
+    tie_weights: true
+  recon_loss:
+    alpha: 0.5
+    gamma: 1.5
+  loss_weights:
+    recon_loss: 80
+    ubc_loss: 3

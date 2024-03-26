@@ -1,0 +1,42 @@
+# @package _global_
+# summary.val/main_best: 2.239791452884674
+defaults:
+  - override /data: default
+  - override /metrics: regression
+  - override /trainer: gpu
+  - override /callbacks: default
+data:
+  dataset: FreeSolv
+  method: FG
+  descriptors: true
+trainer:
+  max_epochs: 50
+model_checkpoint:
+  mode: min
+model:
+  optimizer:
+    lr: 1.6424597689546307e-05
+    weight_decay: 0.0006406098809229873
+    momentum: 1.0
+    rho: 0.05
+    adaptive: false
+  scheduler:
+    T_0: 100
+    T_mult: 1
+  net:
+    hidden_dim1: 2048
+    hidden_dim2: 512
+    hidden_dim3: 512
+    bottleneck_dim: 256
+    output_dim1: 64
+    output_dim2: 128
+    output_dim3: 128
+    dropout: 0.1
+    activation: mish
+    tie_weights: true
+  recon_loss:
+    alpha: 0.4
+    gamma: 3.5
+  loss_weights:
+    recon_loss: 5
+    ubc_loss: 0
