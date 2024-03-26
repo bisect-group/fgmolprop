@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.9323273301124573
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: BBBP
+  method: FGR
+  descriptors: true
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 0.015322293626254853
+    weight_decay: 0.09788640383418663
+    momentum: 0.7000000000000001
+    rho: 0.01
+    adaptive: true
+  scheduler:
+    T_0: 40
+    T_mult: 3
+  net:
+    hidden_dim1: 256
+    hidden_dim2: 256
+    hidden_dim3: 1024
+    bottleneck_dim: 128
+    output_dim1: 32
+    output_dim2: 32
+    output_dim3: 256
+    dropout: 0.2
+    activation: gelu
+    tie_weights: true
+  recon_loss:
+    alpha: 1.0
+    gamma: 1.0
+  loss_weights:
+    recon_loss: 40
+    ubc_loss: 3
