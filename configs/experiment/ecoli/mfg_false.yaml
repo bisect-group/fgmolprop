@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.9277441799640656
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: Ecoli
+  method: MFG
+  descriptors: false
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 0.005544826669441132
+    weight_decay: 1.0191345715754651e-05
+    momentum: 0.6
+    rho: 0.5
+    adaptive: false
+  scheduler:
+    T_0: 100
+    T_mult: 1
+  net:
+    hidden_dim1: 512
+    hidden_dim2: 1024
+    hidden_dim3: 256
+    bottleneck_dim: 256
+    output_dim1: 64
+    output_dim2: 64
+    output_dim3: 128
+    dropout: 0.30000000000000004
+    activation: relu
+    tie_weights: true
+  recon_loss:
+    alpha: 0.4
+    gamma: 2.5
+  loss_weights:
+    recon_loss: 55
+    ubc_loss: 4

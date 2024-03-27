@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.6732952296733856
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: Tox21
+  method: MFG
+  descriptors: false
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 5.5845110468212416e-05
+    weight_decay: 0.001383117186125454
+    momentum: 1.0
+    rho: 0.05
+    adaptive: false
+  scheduler:
+    T_0: 20
+    T_mult: 5
+  net:
+    hidden_dim1: 1024
+    hidden_dim2: 256
+    hidden_dim3: 1024
+    bottleneck_dim: 128
+    output_dim1: 256
+    output_dim2: 128
+    output_dim3: 256
+    dropout: 0.2
+    activation: mish
+    tie_weights: true
+  recon_loss:
+    alpha: 0.6
+    gamma: 3.0
+  loss_weights:
+    recon_loss: 10
+    ubc_loss: 0

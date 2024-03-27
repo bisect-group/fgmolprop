@@ -1,0 +1,42 @@
+# @package _global_
+# summary.val/main_best: 0.8587453663349152
+defaults:
+  - override /data: default
+  - override /metrics: regression
+  - override /trainer: gpu
+  - override /callbacks: default
+data:
+  dataset: LoVo
+  method: FGR
+  descriptors: false
+trainer:
+  max_epochs: 50
+model_checkpoint:
+  mode: min
+model:
+  optimizer:
+    lr: 0.005841771712883263
+    weight_decay: 0.0024177638085466848
+    momentum: 0.6
+    rho: 0.1
+    adaptive: true
+  scheduler:
+    T_0: 10
+    T_mult: 3
+  net:
+    hidden_dim1: 512
+    hidden_dim2: 256
+    hidden_dim3: 256
+    bottleneck_dim: 256
+    output_dim1: 32
+    output_dim2: 256
+    output_dim3: 256
+    dropout: 0.1
+    activation: mish
+    tie_weights: true
+  recon_loss:
+    alpha: 0.6
+    gamma: 3.0
+  loss_weights:
+    recon_loss: 45
+    ubc_loss: 7

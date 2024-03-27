@@ -1,0 +1,42 @@
+# @package _global_
+# summary.val/main_best: 0.7252602577209473
+defaults:
+  - override /data: default
+  - override /metrics: regression
+  - override /trainer: gpu
+  - override /callbacks: default
+data:
+  dataset: CCRF-CEM
+  method: FGR
+  descriptors: true
+trainer:
+  max_epochs: 50
+model_checkpoint:
+  mode: min
+model:
+  optimizer:
+    lr: 0.013653633515822649
+    weight_decay: 0.0004627923474793623
+    momentum: 0.7000000000000001
+    rho: 0.2
+    adaptive: true
+  scheduler:
+    T_0: 20
+    T_mult: 5
+  net:
+    hidden_dim1: 512
+    hidden_dim2: 256
+    hidden_dim3: 256
+    bottleneck_dim: 256
+    output_dim1: 256
+    output_dim2: 64
+    output_dim3: 128
+    dropout: 0.4
+    activation: selu
+    tie_weights: false
+  recon_loss:
+    alpha: 0.8
+    gamma: 2.5
+  loss_weights:
+    recon_loss: 60
+    ubc_loss: 8

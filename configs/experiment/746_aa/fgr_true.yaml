@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.977398157119751
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: 746_aa
+  method: FGR
+  descriptors: true
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 0.007705524986561398
+    weight_decay: 0.0030725042398316877
+    momentum: 0.1
+    rho: 0.2
+    adaptive: true
+  scheduler:
+    T_0: 40
+    T_mult: 3
+  net:
+    hidden_dim1: 512
+    hidden_dim2: 1024
+    hidden_dim3: 1024
+    bottleneck_dim: 256
+    output_dim1: 64
+    output_dim2: 64
+    output_dim3: 64
+    dropout: 0.30000000000000004
+    activation: mish
+    tie_weights: true
+  recon_loss:
+    alpha: 0.7000000000000001
+    gamma: 3.5
+  loss_weights:
+    recon_loss: 10
+    ubc_loss: 1

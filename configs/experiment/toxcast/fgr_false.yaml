@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.6716927289962769
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: ToxCast
+  method: FGR
+  descriptors: false
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 0.03913220156160725
+    weight_decay: 4.2190447682939935e-05
+    momentum: 0.4
+    rho: 0.02
+    adaptive: false
+  scheduler:
+    T_0: 30
+    T_mult: 1
+  net:
+    hidden_dim1: 2048
+    hidden_dim2: 256
+    hidden_dim3: 1024
+    bottleneck_dim: 256
+    output_dim1: 256
+    output_dim2: 128
+    output_dim3: 128
+    dropout: 0.30000000000000004
+    activation: mish
+    tie_weights: true
+  recon_loss:
+    alpha: 0.7000000000000001
+    gamma: 3.0
+  loss_weights:
+    recon_loss: 10
+    ubc_loss: 1

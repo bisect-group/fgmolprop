@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.9807557165622711
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: ClinTox
+  method: FGR
+  descriptors: false
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 0.0005696299482722709
+    weight_decay: 0.0013537682820973448
+    momentum: 1.0
+    rho: 0.05
+    adaptive: false
+  scheduler:
+    T_0: 100
+    T_mult: 1
+  net:
+    hidden_dim1: 512
+    hidden_dim2: 512
+    hidden_dim3: 512
+    bottleneck_dim: 256
+    output_dim1: 64
+    output_dim2: 128
+    output_dim3: 128
+    dropout: 0.30000000000000004
+    activation: silu
+    tie_weights: true
+  recon_loss:
+    alpha: 0.2
+    gamma: 3.5
+  loss_weights:
+    recon_loss: 20
+    ubc_loss: 1

@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.6546738147735596
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: SIDER
+  method: FG
+  descriptors: false
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 0.08721582665270274
+    weight_decay: 0.002867489032733015
+    momentum: 0.2
+    rho: 0.05
+    adaptive: true
+  scheduler:
+    T_0: 30
+    T_mult: 1
+  net:
+    hidden_dim1: 256
+    hidden_dim2: 512
+    hidden_dim3: 256
+    bottleneck_dim: 256
+    output_dim1: 256
+    output_dim2: 64
+    output_dim3: 128
+    dropout: 0.4
+    activation: silu
+    tie_weights: true
+  recon_loss:
+    alpha: 0.2
+    gamma: 1.0
+  loss_weights:
+    recon_loss: 40
+    ubc_loss: 0

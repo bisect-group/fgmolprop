@@ -1,0 +1,42 @@
+# @package _global_
+# summary.val/main_best: 0.9338901340961456
+defaults:
+  - override /data: default
+  - override /metrics: regression
+  - override /trainer: gpu
+  - override /callbacks: default
+data:
+  dataset: KB
+  method: FG
+  descriptors: false
+trainer:
+  max_epochs: 50
+model_checkpoint:
+  mode: min
+model:
+  optimizer:
+    lr: 0.006443959603325837
+    weight_decay: 0.011535582432064694
+    momentum: 0.7000000000000001
+    rho: 0.1
+    adaptive: true
+  scheduler:
+    T_0: 10
+    T_mult: 3
+  net:
+    hidden_dim1: 2048
+    hidden_dim2: 256
+    hidden_dim3: 256
+    bottleneck_dim: 256
+    output_dim1: 64
+    output_dim2: 32
+    output_dim3: 32
+    dropout: 0.0
+    activation: lrelu
+    tie_weights: true
+  recon_loss:
+    alpha: 0.8
+    gamma: 4.5
+  loss_weights:
+    recon_loss: 0
+    ubc_loss: 6

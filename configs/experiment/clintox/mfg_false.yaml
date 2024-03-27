@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.8629491627216339
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: ClinTox
+  method: MFG
+  descriptors: false
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 0.006349722297472117
+    weight_decay: 0.057636013565700285
+    momentum: 0.8
+    rho: 0.02
+    adaptive: true
+  scheduler:
+    T_0: 20
+    T_mult: 3
+  net:
+    hidden_dim1: 512
+    hidden_dim2: 1024
+    hidden_dim3: 256
+    bottleneck_dim: 32
+    output_dim1: 32
+    output_dim2: 64
+    output_dim3: 256
+    dropout: 0.1
+    activation: mish
+    tie_weights: true
+  recon_loss:
+    alpha: 0.4
+    gamma: 1.0
+  loss_weights:
+    recon_loss: 65
+    ubc_loss: 0
