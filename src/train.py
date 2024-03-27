@@ -88,7 +88,7 @@ def train(cfg: DictConfig) -> Dict[str, Any]:
 
         for callback in callbacks:
             if isinstance(callback, ModelCheckpoint):
-                callback.dirpath = f"{callback.dirpath}/fold_{fold_idx}/{cfg.data.descriptors}"
+                callback.dirpath = f"{callback.dirpath}/fold_{fold_idx}"
 
         log.info("Instantiating loggers...")
         logger: List[Logger] = instantiate_loggers(cfg.get("logger"))
