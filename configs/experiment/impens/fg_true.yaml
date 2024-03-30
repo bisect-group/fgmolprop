@@ -1,0 +1,39 @@
+# @package _global_
+# summary.val/main_best: 0.8619535565376282
+defaults:
+  - override /data: default
+  - override /metrics: classification
+  - override /trainer: gpu
+data:
+  dataset: Impens
+  method: FG
+  descriptors: true
+trainer:
+  max_epochs: 50
+model:
+  optimizer:
+    lr: 0.008396106293925846
+    weight_decay: 0.0010233943107565613
+    momentum: 1.0
+    rho: 0.2
+    adaptive: false
+  scheduler:
+    T_0: 100
+    T_mult: 2
+  net:
+    hidden_dim1: 512
+    hidden_dim2: 2048
+    hidden_dim3: 2048
+    bottleneck_dim: 32
+    output_dim1: 256
+    output_dim2: 256
+    output_dim3: 32
+    dropout: 0.5
+    activation: lrelu
+    tie_weights: true
+  recon_loss:
+    alpha: 0.8
+    gamma: 4.0
+  loss_weights:
+    recon_loss: 30
+    ubc_loss: 4
