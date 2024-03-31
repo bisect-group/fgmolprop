@@ -303,6 +303,7 @@ class FigureGenerator:
         scaffold_df, label_encoder = self.get_scaffolds()
         self.plot_scaffolds(label_encoder)
 
+        # Plot alignment
         tsne_fig, tsne_axes = plt.subplots(1, 3, figsize=(12, 3))
         for i, method in enumerate(methods):
             x = self.get_representation(scaffold_df["SMILES"].tolist(), method)
@@ -333,6 +334,7 @@ class FigureGenerator:
         )
         plt.close()
 
+        # Plot uniformity
         results = {}
         for i, method in enumerate(methods):
             x = self.get_representation(self.smiles, method)
@@ -354,40 +356,103 @@ class FigureGenerator:
         )
         plt.close()
 
-        if len(self.labels.columns) < 30:
-            labels_dir = self.dataset_dir / "labels"
-            labels_dir.mkdir(parents=True, exist_ok=True)
-            for label in self.labels.columns:
-                label_fig, label_axes = plt.subplots(1, 3, figsize=(12, 3))
-                label_values = self.labels[label].to_numpy()
-                dbi_scores = [
-                    round(
-                        float(
-                            davies_bouldin_score(
-                                torch.tensor(results[method]["x"]),
-                                torch.tensor(label_values).reshape(-1),
-                            )
-                        ),
-                        2,
-                    )
-                    for method in methods
-                ]
-                for i, method in enumerate(methods):
-                    self.plot_tsne(
-                        label,
-                        method,
-                        dbi_scores[i],
-                        results[method]["components"],
-                        label_values,
-                        ax=label_axes[i],
-                    )
-                label_fig.savefig(
-                    labels_dir / f"{self.mode}_{label}_fig.png",
-                    bbox_inches="tight",
-                    dpi=600,
-                    transparent=True,
+        # Plot label alignment
+        labels_dir = self.dataset_dir / "labels"
+        labels_dir.mkdir(parents=True, exist_ok=True)
+
+        # Assuming fig.smiles is a list of SMILES strings
+        smiles_lengths = [len(smile) for smile in self.smiles]
+        smiles_lengths_df = pd.DataFrame(smiles_lengths, columns=["Length"])
+
+        # Calculate the average length
+        average_length = smiles_lengths_df["Length"].mean()
+
+        smiles_fig, smiles_axes = plt.subplots(1, 1, figsize=(4, 3))
+
+        # Plot the histogram
+        sns.histplot(
+            data=smiles_lengths_df,
+            x="Length",
+            bins=30,
+            kde=True,
+            color=sns.color_palette(colors)[2],
+            ax=smiles_axes,
+        )
+
+        # Draw a vertical line at the average length
+        smiles_axes.axvline(average_length, color="r", linestyle="--")
+        smiles_axes.text(
+            average_length + 1,
+            smiles_axes.get_ylim()[1] - 10,
+            f"Average: {average_length:.2f}",
+            color="r",
+        )
+
+        smiles_axes.set_title("Length Distribution of SMILES")
+        smiles_axes.set_xlabel("Length")
+        smiles_axes.set_ylabel("Frequency")
+        smiles_fig.savefig(
+            labels_dir / f"{self.mode}_smiles_length.png",
+            bbox_inches="tight",
+            dpi=600,
+            transparent=True,
+        )
+        plt.close()
+
+        for label in self.labels.columns[:30]:
+            # Plot label distribution
+            label_dist_fig, label_dist_axes = plt.subplots(1, 1, figsize=(4, 3))
+            sns.histplot(
+                data=self.labels,
+                x=label,
+                bins=30,
+                kde=True,
+                color=sns.color_palette(colors)[2],
+                ax=label_dist_axes,
+            )
+
+            label_dist_axes.set_title("Distribution of Labels")
+            label_dist_axes.set_xlabel(label)
+            label_dist_axes.set_ylabel("Frequency")
+            label_dist_fig.savefig(
+                labels_dir / f"{self.mode}_{label}_dist.png",
+                bbox_inches="tight",
+                dpi=600,
+                transparent=True,
+            )
+            plt.close()
+
+            # Plot label alignment
+            label_fig, label_axes = plt.subplots(1, 3, figsize=(12, 3))
+            label_values = self.labels[label].to_numpy()
+            dbi_scores = [
+                round(
+                    float(
+                        davies_bouldin_score(
+                            torch.tensor(results[method]["x"]),
+                            torch.tensor(label_values).reshape(-1),
+                        )
+                    ),
+                    2,
                 )
-                plt.close()
+                for method in methods
+            ]
+            for i, method in enumerate(methods):
+                self.plot_tsne(
+                    label,
+                    method,
+                    dbi_scores[i],
+                    results[method]["components"],
+                    label_values,
+                    ax=label_axes[i],
+                )
+            label_fig.savefig(
+                labels_dir / f"{self.mode}_{label}_fig.png",
+                bbox_inches="tight",
+                dpi=600,
+                transparent=True,
+            )
+            plt.close()
 
     def get_data_model(self, fold_idx: int):
         """Get data and model.
