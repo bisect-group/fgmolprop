@@ -17,7 +17,6 @@ import seaborn as sns
 import torch
 from captum.attr import (
     Attribution,
-    DeepLiftShap,
     FeatureAblation,
     FeaturePermutation,
     GradientShap,
@@ -149,7 +148,7 @@ class FigureGenerator:
             return x
         elif self.mode == "train":
             ckpt_paths = glob.glob(
-                f"./logs/train/*/*/{self.dataset}/{method}/scaffold/checkpoints/*/{self.descriptor}/epoch_*.ckpt"
+                f"./models/{self.dataset}/{method}/scaffold/{self.descriptor}/checkpoints/*/epoch_*.ckpt"
             )
             x = torch.tensor(x, dtype=torch.float32, device="cpu")
             desc = torch.tensor(
@@ -473,9 +472,9 @@ class FigureGenerator:
         x = self.get_representation(test_smiles, "FGR")
         desc = np.stack([get_descriptors(smi) for smi in test_smiles], axis=0)
         ckpt_path = glob.glob(
-            f"./logs/train/*/*/{self.dataset}/FGR/scaffold/checkpoints/fold_{fold_idx}/{self.descriptor}/epoch_*.ckpt"
+            f"./models/{self.dataset}/FGR/scaffold/{self.descriptor}/checkpoints/fold_{fold_idx}/epoch_*.ckpt"
         )[0]
-        model = FGRLitModule.load_from_checkpoint(ckpt_path).to("cpu")
+        model = FGRLitModule.load_from_checkpoint(ckpt_path).to("cuda:1")
         wrapped_model = WrapperModel(model)
         wrapped_model.eval()
         x = torch.tensor(x, dtype=torch.float32, device=model.device)
@@ -497,10 +496,10 @@ class FigureGenerator:
 
         # Do not apply baselines for FeaturePermutation
         if isinstance(attribution_model, FeaturePermutation):
-            attribution = attribution_model.attribute((x, desc))
+            attribution = attribution_model.attribute((x, desc), target=0)
         else:
             baselines = (torch.zeros_like(x), torch.zeros_like(desc))
-            attribution = attribution_model.attribute((x, desc), baselines=baselines)
+            attribution = attribution_model.attribute((x, desc), baselines=baselines, target=0)
 
         attribution_sum = np.concatenate(
             [attr.cpu().detach().numpy() for attr in attribution], axis=1
@@ -517,7 +516,6 @@ class FigureGenerator:
             "Int Grads": IntegratedGradients,
             "Int Grads w/SmoothGrad": lambda model: NoiseTunnel(IntegratedGradients(model)),
             "GradientShap": GradientShap,
-            "DeepLiftShap": DeepLiftShap,
             "Feature Ablation": FeatureAblation,
             "Feature Permutation": FeaturePermutation,
         }
@@ -551,16 +549,8 @@ class FigureGenerator:
         # Calculate the average attribution across methods
         average_attribution = sum(average_attributions.values()) / len(average_attributions)
 
-        # Get the top 10 indices
-        sorted_indices = np.abs(average_attribution).argsort()  # type: ignore
-
-        # Get the first top 10
-        first_top_10 = sorted_indices[-10:]
-
-        # Get the top 10 after 2672
-        top_10_after_2672 = sorted_indices[2672 : 2672 + 10]
-
-        final_ind = first_top_10 + top_10_after_2672
+        # Get the top 20 indices
+        final_ind = np.abs(average_attribution).argsort()[-20:]
 
         # Pre-calculate common values
         num_keys = len(average_attributions.keys())
@@ -641,5 +631,6 @@ if __name__ == "__main__":
             try:
                 fig_gen = FigureGenerator(dataset=task, mode=mode)
                 fig_gen.generate_figures()
+                fig_gen.plot_attribution()
             except BaseException:
                 print(f"{task} {mode} failed...")
