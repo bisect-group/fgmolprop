@@ -4,7 +4,6 @@ loss:
 metrics:
   main:
     _target_: "torchmetrics.MeanSquaredError"
-    squared: False
   valid_best:
     _target_: "torchmetrics.MinMetric"
   additional:

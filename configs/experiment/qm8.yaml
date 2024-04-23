@@ -15,5 +15,10 @@ data:
 trainer:
   max_epochs: 50
 
+metrics:
+  metrics:
+    main:
+      _target_: "torchmetrics.MeanAbsoluteError"
+
 model_checkpoint:
   mode: "min"

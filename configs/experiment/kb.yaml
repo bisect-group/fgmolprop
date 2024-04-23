@@ -10,7 +10,7 @@ defaults:
   - override /callbacks: default
 
 data:
-  dataset: "HCT-15"
+  dataset: "KB"
 
 trainer:
   max_epochs: 50
@@ -23,4 +23,4 @@ metrics:
       _target_: "torchmetrics.MaxMetric"
 
 model_checkpoint:
-  mode: "min"
+  mode: "max"

@@ -15,5 +15,12 @@ data:
 trainer:
   max_epochs: 50
 
+metrics:
+  metrics:
+    main:
+      _target_: "torchmetrics.R2Score"
+    valid_best:
+      _target_: "torchmetrics.MaxMetric"
+
 model_checkpoint:
-  mode: "min"
+  mode: "max"
