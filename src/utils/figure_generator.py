@@ -474,7 +474,7 @@ class FigureGenerator:
         ckpt_path = glob.glob(
             f"./models/{self.dataset}/FGR/scaffold/{self.descriptor}/checkpoints/fold_{fold_idx}/epoch_*.ckpt"
         )[0]
-        model = FGRLitModule.load_from_checkpoint(ckpt_path).to("cuda:1")
+        model = FGRLitModule.load_from_checkpoint(ckpt_path).to("cuda:3")
         wrapped_model = WrapperModel(model)
         wrapped_model.eval()
         x = torch.tensor(x, dtype=torch.float32, device=model.device)
@@ -507,7 +507,7 @@ class FigureGenerator:
         norm_attribution = attribution_sum / np.linalg.norm(attribution_sum, ord=2)
         return norm_attribution
 
-    def get_average_attribution(self) -> Dict[str, float]:
+    def get_average_attribution(self) -> Dict[str, np.ndarray]:
         """Get average attribution scores.
 
         :return: Average attribution scores
@@ -520,23 +520,23 @@ class FigureGenerator:
             "Feature Permutation": FeaturePermutation,
         }
 
-        attributions = {
-            name: [
-                self.get_attribution(method(model), x, desc)
-                for fold in range(5)
-                for x, desc, model in [self.get_data_model(fold)]
-            ]
+        # Define attributions with the correct type
+        attributions: Dict[str, np.ndarray] = {
+            name: np.asarray(
+                [
+                    self.get_attribution(method(model), x, desc)
+                    for fold in range(5)
+                    for x, desc, model in [self.get_data_model(fold)]
+                ]
+            )
             for name, method in methods.items()
         }
 
-        # Calculate the average attributions
-        average_attributions = {name: np.mean(attr, axis=0) for name, attr in attributions.items()}
-
         # Save the average_attributions dictionary
         with open(self.dataset_dir / "average_attributions.pkl", "wb") as f:
-            pickle.dump(average_attributions, f)
+            pickle.dump(attributions, f)
 
-        return average_attributions
+        return attributions
 
     def plot_attribution(self) -> None:
         """Plot attribution scores."""
