@@ -542,30 +542,31 @@ class FigureGenerator:
         """Plot attribution scores."""
         try:
             with open(self.dataset_dir / "average_attributions.pkl", "rb") as f:
-                average_attributions = pickle.load(f)
+                attributions = pickle.load(f)
         except (FileNotFoundError, OSError):
-            average_attributions = self.get_average_attribution()
+            attributions = self.get_average_attribution()
 
+        average_attributions = {name: np.mean(attr, axis=0) for name, attr in attributions.items()}
         # Calculate the average attribution across methods
         average_attribution = sum(average_attributions.values()) / len(average_attributions)
 
         # Get the top 20 indices
         final_ind = np.abs(average_attribution).argsort()[-20:]
 
-        # Pre-calculate common values
-        num_keys = len(average_attributions.keys())
-        num_indices = len(final_ind)
-
-        # Use list multiplication
-        algorithms = [key for key in average_attributions.keys() for _ in range(num_indices)]
-
-        feature_names = [self.input_names[i] for i in final_ind] * num_keys
-        feature_values = [average_attributions[key][i] for key in average_attributions.keys() for i in final_ind]  # type: ignore
+        feature_names = []
+        attribution_values = []
+        algorithms = []
+        for name, attr in attributions.items():
+            for i in range(attr.shape[0]):
+                for j in final_ind:
+                    algorithms.append(name)
+                    feature_names.append(self.input_names[j])
+                    attribution_values.append(attr[i, j])
         data = pd.DataFrame(
             {
                 "Algorithm": algorithms,
                 "Feature": feature_names,
-                "Attribution": feature_values,
+                "Attribution": attribution_values,
             }
         )  # Draw a nested barplot by species and sex
         g = sns.catplot(
