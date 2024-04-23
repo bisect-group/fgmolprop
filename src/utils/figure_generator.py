@@ -597,7 +597,7 @@ class FigureGenerator:
         # Draw the new legend
         legend = g.ax.legend(
             loc="upper left",
-            bbox_to_anchor=(0, 0.9),
+            bbox_to_anchor=(0, 0.95),
             frameon=True,
             title="Interpretability Methods",
         )
