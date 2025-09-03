@@ -2,9 +2,8 @@
 
 # enable color logging
 defaults:
-  - override hydra_logging: colorlog
-  - override job_logging: colorlog
-  - override launcher: joblib
+  - override hydra_logging: default
+  - override job_logging: default
 
 # output directory, generated dynamically on each run
 run:
@@ -18,6 +17,3 @@ job_logging:
     file:
       # Incorporates fix from https://github.com/facebookresearch/hydra/pull/2242
       filename: ${hydra.runtime.output_dir}/${task_name}.log
-
-launcher:
-  n_jobs: 3
