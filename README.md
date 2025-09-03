@@ -86,8 +86,18 @@ pip install -e .
 # Test the installation
 python -c "import src; print('Installation successful!')"
 
-# Check available datasets
+# Check available datasets and experiments
 python src/train.py --help
+
+# Verify basic module imports
+python -c "
+import torch
+import lightning as L
+import hydra
+print(f'PyTorch: {torch.__version__}')
+print(f'Lightning: {L.__version__}')
+print('All core dependencies loaded successfully!')
+"
 ```
 
 <br>
@@ -260,6 +270,23 @@ net:
 | QM8 | Regression | Electronic spectra | 21,786 |
 | QM9 | Regression | Quantum properties | 133,885 |
 
+### Available Experiments
+
+The framework includes pre-configured experiments for various molecular property datasets. Each experiment can be run with different molecular representation methods:
+
+**Representation Methods:**
+- `FG`: Functional Groups only
+- `FGR`: Functional Groups + Molecular Descriptors  
+- `MFG`: Modified Functional Groups
+
+**Pre-configured Datasets:**
+- **ADMET**: `bbbp`, `bace`, `clintox`, `esol`, `freesolv`, `lipop`, `sider`, `tox21`
+- **Quantum**: `qm7`, `qm8`, `qm9`
+- **Biochemical**: `hiv`, `muv`, `pcba`
+- **Cell Lines**: `1625_aa`, `a2780`, `ccrf`, `du145`, `hct15`, `kb`, `lovo`, `pc3`, `skov3`
+- **Chemical Libraries**: `chembl`, `pdbcore`, `pdbfull`, `pdbrefined`
+- **Others**: `cyp`, `malaria`, `mpro`, `schilling`
+
 <br>
 
 ## 📊 Evaluation
@@ -359,6 +386,17 @@ fgmolprop/
 
 ### Common Issues
 
+### Common Issues
+
+**Missing dependencies:**
+```bash
+# Install missing packages
+pip install wandb rootutils rich
+
+# Or install all requirements at once
+pip install -r requirements.txt
+```
+
 **CUDA out of memory:**
 ```bash
 # Reduce batch size
@@ -384,6 +422,15 @@ pip install -e .
 
 # Check environment
 python -c "import src; print('OK')"
+```
+
+**Configuration errors:**
+```bash
+# Use + to add new parameters
+python src/train.py +trainer.fast_dev_run=1
+
+# Check available configurations
+python src/train.py --help
 ```
 
 **Slow training:**
