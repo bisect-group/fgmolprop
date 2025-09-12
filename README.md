@@ -13,6 +13,10 @@ A deep learning framework for molecular property prediction using functional gro
 
 <br>
 
+## Supplementary Information
+
+The Supplementary Information for the paper can be found in this [link](https://drive.google.com/file/d/1Ux4F9Dcn8g9V4r9EEHuHsg9rrT3KuzxO/view?usp=sharing).
+
 ## 📌 Overview
 
 FGMolProp is a deep learning framework for predicting molecular properties using functional group representations. Unlike traditional molecular representations (SMILES, graphs), this approach decomposes molecules into their constituent functional groups, enabling more interpretable and efficient property prediction.
@@ -460,11 +464,14 @@ python src/train.py trainer=gpu +trainer.precision=16
 If you use FGMolProp in your research, please cite:
 
 ```bibtex
-@software{fgmolprop,
-  title={FGMolProp: Functional Group-based Molecular Property Prediction},
-  author={Your Name},
-  url={https://github.com/roshanmsb/fgmolprop},
-  year={2024}
+@misc{balaji2025functionalgroupsneedchemically,
+      title={Functional Groups are All you Need for Chemically Interpretable Molecular Property Prediction}, 
+      author={Roshan Balaji and Joe Bobby and Nirav Pravinbhai Bhatt},
+      year={2025},
+      eprint={2509.09619},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2509.09619}, 
 }
 ```
 
